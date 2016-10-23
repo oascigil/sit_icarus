@@ -368,8 +368,9 @@ class NetworkModel(object):
                         self.content_source[content] = node
             # Onur:
             elif stack_name == 'receiver':
-                if 'cache_size' in stack_props:
-                    cache_size[node] = stack_props['cache_size']
+                self.cache_size[node] = 10000
+                #if 'cache_size' in stack_props:
+                    #cache_size[node] = stack_props['cache_size']
             #
 
         if any(c < 1 for c in self.cache_size.values()):
@@ -619,6 +620,9 @@ class NetworkController(object):
             *True* if the entry was in the cache, *False* if it was not.
         """
 
+        if self.collector is not None:
+            self.collector.evict_item(content)
+            
         return self.model.cache[node].remove(content)
 
     def remove_content(self, node):

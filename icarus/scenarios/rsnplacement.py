@@ -4,12 +4,14 @@ from __future__ import division
 import networkx as nx
 from icarus.util import iround
 from cacheplacement import uniform_consolidated_cache_placement
+from cacheplacement import uniform_sit_cache_placement
 from icarus.registry import register_rsn_placement, register_joint_cache_rsn_placement
 
 
 __all__ = [
     'uniform_consolidated_rsn_placement',
     'cache_all_rsn_all_placement', 
+    'cache_all_rsn_all_sit_placement', 
     'cache_all_rsn_high_placement',
     'cache_all_rsn_low_placement',
     'cache_high_rsn_all_placement',
@@ -70,7 +72,33 @@ def uniform_consolidated_rsn_placement(topology, rsn_budget, spread=0.5,
         return
     for v in target_nodes:
         topology.node[v]['stack'][1]['rsn_size'] = rsn_size
-        
+
+# Onur added this
+@register_joint_cache_rsn_placement('CACHE_ALL_RSN_ALL_SIT')
+def cache_all_rsn_all_sit_placement(topology, cache_budget, rsn_budget, n_contents=10000, **kwargs):
+    """ Same as CACHE_ALL_RSN_ALL with the addition of infinite caches to receivers
+
+    Jointly assign caches and RSN tables to all candidate nodes.
+    
+    Parameters
+    ----------
+    topology : Topology
+        The topology object
+    cache_budget : int
+        The cumulative cache budget (in number of entries across the network)
+    rsn_budget : int
+        The cumulative cache budget (in number of entries across the network)
+    metric_dict : dict, optional
+        A dictionary with the values of the centrality metric according to
+        which nodes are selected, keyed by node.
+        If not specified, betweenness centrality is used.
+    """
+    uniform_sit_cache_placement(topology, cache_budget, n_contents)
+    #uniform_consolidated_cache_placement(topology, cache_budget, spread=1.0)
+    uniform_consolidated_rsn_placement(topology, rsn_budget, spread=1.0)
+
+
+
 @register_joint_cache_rsn_placement('CACHE_ALL_RSN_ALL')
 def cache_all_rsn_all_placement(topology, cache_budget, rsn_budget, **kwargs):
     """Jointly assign caches and RSN tables to all candidate nodes.

@@ -1320,7 +1320,7 @@ def run(resultsfile, plotdir):
         print 'RESULTS:\n'
         printTree(l[1])
 
-    print_first_experiment_data(lst)
+    #print_first_experiment_data(lst)
     #print_strategies_experiments_gnuplot(lst)
     #print_second_experiment_data(lst)
     #plot_third_experiments(resultset, plotdir)

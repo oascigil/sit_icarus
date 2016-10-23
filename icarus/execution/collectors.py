@@ -321,17 +321,18 @@ class AbsorptionCollector(DataCollector):
 
     @inheritdoc(DataCollector)
     def put_item(self, item):
-        if self.content_count[item] is None:
+        if item not in self.content_count.keys():
             self.content_count[item] = 1
         else:
             self.content_count[item] += 1
         
     @inheritdoc(DataCollector)
     def evict_item(self, item):
-        self.content_count[item] -= 1
-        if self.content_count[item] is 0:
-            self.absorbtion_times += self.time
-            self.num_absorbed += 1
+        if item in self.content_count.keys():
+            self.content_count[item] -= 1
+            if self.content_count[item] is 0:
+                self.absorbtion_times += self.time
+                self.num_absorbed += 1
          
     @inheritdoc(DataCollector)
     def results(self):
@@ -551,7 +552,7 @@ class CacheHitRatioCollector(DataCollector):
             self.hit_indicator = True
             self.cache_hits += 1
             if self.user_hits:
-                if node in self.view.topology.receivers
+                if node in self.view.topology().receivers():
                     self.num_user_hits += 1
             if self.off_path_hits and node not in self.curr_path:
                 self.off_path_hit_count += 1

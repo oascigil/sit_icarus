@@ -32,7 +32,7 @@ def uniform_sit_cache_placement(topology, cache_budget, n_contents, **kwargs):
     for v in icr_candidates:
         topology.node[v]['stack'][1]['cache_size'] = cache_size
 
-    for v in topology.receivers:
+    for v in topology.receivers():
         topology.node[v]['stack'][1]['cache_size'] = n_contents
 
 @register_cache_placement('UNIFORM')

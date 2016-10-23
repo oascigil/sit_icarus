@@ -223,8 +223,6 @@ def run_scenario(settings, params, curr_exp, n_exp):
             # Cache budget is the cumulative number of cache entries across
             # the whole network
             cachepl_spec['cache_budget'] = workload.n_contents * network_cache
-            # Onur: need the full budget to assign to receivers for SIT cache placement
-            cachepl_spec['n_contents'] = workload.n_contents
             CACHE_PLACEMENT[cachepl_name](topology, **cachepl_spec)
             
             if 'rsn_placement' in tree:
@@ -253,6 +251,8 @@ def run_scenario(settings, params, curr_exp, n_exp):
             cache_rsn_spec['cache_budget'] = workload.n_contents * network_cache
             network_rsn = cache_rsn_spec.pop('network_rsn')
             cache_rsn_spec['rsn_budget'] = workload.n_contents * network_rsn
+            # Onur: need the full budget to assign to receivers for SIT cache placement
+            cache_rsn_spec['n_contents'] = workload.n_contents
             JOINT_CACHE_RSN_PLACEMENT[cache_rsn_name](topology, **cache_rsn_spec)
             if 'rsn_cache_ratio' not in params['joint_cache_rsn_placement']:
                 params['joint_cache_rsn_placement']['rsn_cache_ratio'] = network_rsn/network_cache

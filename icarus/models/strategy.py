@@ -461,14 +461,15 @@ class Sit_only(Strategy):
         super(Sit_only, self).__init__(view, controller)
         self.p = p
         self.fan_out = fan_out
-        self.n_warmup = n_warmup
-        self.topo = view.topology
+        self.topo = view.topology()
         
-        num_receviers = len(self.topo.receivers)
+        num_receviers = len(self.topo.receivers())
         self.connections = [dict() for x in range(num_receviers)]
+        self.receivers_list = list(self.topo.receivers())
     
     def disconnect_content(self, receiver):
-        receiver_conns = self.connections[receiver]
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = self.connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
         ret = None
         if len(positives) > 0:
@@ -538,18 +539,22 @@ class Sit_only(Strategy):
 
     @inheritdoc(Strategy)
     def process_event(self, time, receiver, content, log):
+
+        if content == -1:
+        # Process a disconnect event
+            self.controller.start_session(time, receiver, 0, log)
+            self.disconnect_content(receiver)
+            self.controller.end_session()
+            return
+        
         self.controller.start_session(time, receiver, content, log)
         # Source of content
         source = self.view.content_source(content)
 
-        if content == -1:
-        # Process a disconnect event
-            self.disconnect_content(receiver)
-            self.controller.end_session()
-            return
 
         # Increment the connections for the content
-        receiver_conns = self.connections[receiver]
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = self.connections[receiver_index]
         if content in receiver_conns.keys():
             receiver_conns[content] += 1
         else: 
@@ -562,7 +567,7 @@ class Sit_only(Strategy):
         else:
             raise ValueError('receiver has no cache')
         
-        access_node = self.topo.neighbors(curr_hop)[0]
+        access_node = self.topo.neighbors(receiver)[0]
         self.controller.forward_request_hop(receiver, access_node)
         if self.view.has_cache(access_node):
             if self.controller.get_content(access_node):
@@ -571,16 +576,18 @@ class Sit_only(Strategy):
                 return
         # Perform SIT routing
         rsn_entry = self.lookup_rsn_at_node(access_node)
-        rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, receiver, self.fan_out)
-        trail = [receiver, access_node]
+        rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, receiver, self.fan_out) if rsn_entry is not None else None
         off_path_trails = []
-        for rsn_nexthop_obj in rsn_nexthop_objs:
-            rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None
-            self.follow_offpath_trail(receiver, access_node, rsn_hop, trail, off_path_trails, source, time)
+        if rsn_entry is not None:
+            trail = [receiver, access_node]
+            for rsn_nexthop_obj in rsn_nexthop_objs:
+                rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None
+                self.follow_offpath_trail(receiver, access_node, rsn_hop, trail, off_path_trails, source, time)
         
         # Return content SIT_only
         sorted_paths = sorted(off_path_trails, key=len)
         first = False
+        visited = {} # keep track of the visited nodes to eliminate duplicate data packets arriving at a hop (simulating PIT forwarding)
         for path in sorted_paths:
             if not first: # only forward the request of the shortest path
                 first = True
