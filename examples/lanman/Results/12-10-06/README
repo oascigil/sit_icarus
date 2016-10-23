@@ -1,0 +1,7 @@
+This is the results after changing the BC_HYBRID strategy to point DFIB state towards the cache once a content is stored. 
+Details:
+
+If the content comes from the server, point DFIB state towards user, but once a content is stored on a router on the path, from that point on
+point the DFIB state towards the server. 
+
+If the content arrives from a cache (off-path or on-path), point the state towards the cache.  
