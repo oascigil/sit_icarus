@@ -353,6 +353,7 @@ class NetworkModel(object):
                 self.link_delay[(v, u)] = delay
                 
         # Initialize attributes
+        receiver_cache_size = 0
         for node in topology.nodes_iter():
             stack_name, stack_props = fnss.get_stack(topology, node)
             if stack_name == 'router':
@@ -368,11 +369,14 @@ class NetworkModel(object):
                         self.content_source[content] = node
             # Onur:
             elif stack_name == 'receiver':
-                self.cache_size[node] = 10000
-                #if 'cache_size' in stack_props:
-                    #cache_size[node] = stack_props['cache_size']
+                if 'cache_size' in stack_props:
+                    receiver_cache_size = stack_props['cache_size']
+                    self.cache_size[node] = stack_props['cache_size']
             #
-
+        if receiver_cache_size is 0:
+            print "Receiver has no cache"
+        else:
+            print "Receiver cache size is set to ", receiver_cache_size
         if any(c < 1 for c in self.cache_size.values()):
             logger.warn('Some content caches have size equal to 0. '
                           'I am setting them to 1 and run the experiment anyway')

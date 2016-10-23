@@ -65,6 +65,8 @@ N_MEASURED = 3*60*60*10 # three hours
 # Number of requests per second (over the whole network)
 REQ_RATE = 10
 
+DISCONNECTION_RATE = 0.01
+
 default = Tree()
 default['workload'] = {
     'name':      'STATIONARY_SIT',
@@ -135,27 +137,40 @@ for asn in [3257]:
 1. Cache hit rate for different probability
 """
 
-experiment = copy.deepcopy(base)
-for joint_cache_rsn_placement in ['CACHE_ALL_RSN_ALL_SIT']:
-    for strategy in ['NDN', 'SIT_ONLY']:
-        for caching_probability in [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]:
-            if strategy is not 'SIT_ONLY':
-                experiment['workload'] = {
-                    'name':      'STATIONARY',
-                    'alpha':      ALPHA,
-                    'n_contents': N_CONTENTS,
-                    'n_warmup':   N_WARMUP,
-                    'n_measured': N_MEASURED,
-                    'rate':       REQ_RATE,
-                }
-            experiment['topology']['asn'] = 3257 #3967
-            experiment['strategy']['name'] = strategy
-            experiment['strategy']['p'] = caching_probability 
-            experiment['joint_cache_rsn_placement']['name'] = joint_cache_rsn_placement
-            experiment['joint_cache_rsn_placement']['network_rsn'] = 64* network_cache
-            experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = 64
-            experiment['desc'] = "caching probability: %s" % str(caching_probability)
-            EXPERIMENT_QUEUE.append(experiment)
+for strategy in ['NDN', 'SIT_ONLY']:
+    for caching_probability in [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]:
+        experiment = copy.deepcopy(base)
+        if strategy is not 'SIT_ONLY':
+            print "Not SIT"
+            experiment['workload'] = {
+                'name':      'STATIONARY',
+                'alpha':      ALPHA,
+                'n_contents': N_CONTENTS,
+                'n_warmup':   N_WARMUP,
+                'n_measured': N_MEASURED,
+                'rate':       REQ_RATE
+            }
+            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL'
+        else:
+            print "SIT"
+            experiment['workload'] = {
+                'name':      'STATIONARY_SIT',
+                'alpha':      ALPHA,
+                'n_contents': N_CONTENTS,
+                'n_warmup':   N_WARMUP,
+                'n_measured': N_MEASURED,
+                'rate':       REQ_RATE,
+                'disconnection_rate': DISCONNECTION_RATE
+            }
+            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+                
+        experiment['topology']['asn'] = 3257 #3967
+        experiment['strategy']['name'] = strategy
+        experiment['strategy']['p'] = caching_probability 
+        experiment['joint_cache_rsn_placement']['network_rsn'] = 64* network_cache
+        experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = 64
+        experiment['desc'] = "caching probability: %s" % str(caching_probability)
+        EXPERIMENT_QUEUE.append(experiment)
 
 
 """

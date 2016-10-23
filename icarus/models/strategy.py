@@ -525,7 +525,8 @@ class Sit_only(Strategy):
         # This point is reached when I did explore an RSN
         # trail but failed. 
         # Invalidate the trail here and return to on-path node
-            self.controller.invalidate_trail(trail)
+            # self.controller.invalidate_trail(trail)
+            
             #TODO if, afer invalidation, there is no nexthop entries
             # then delete the rsn entry
             return None
