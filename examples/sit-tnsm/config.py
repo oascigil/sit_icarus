@@ -17,7 +17,7 @@ PARALLEL_EXECUTION = True
 
 # Number of processes used to run simulations in parallel.
 # This option is ignored if PARALLEL_EXECUTION = False
-N_PROCESSES = cpu_count()/3
+N_PROCESSES = cpu_count()
 
 # Granularity of caching.
 # Currently, only OBJECT is supported
@@ -65,7 +65,9 @@ N_MEASURED = 3*60*60*10 # three hours
 # Number of requests per second (over the whole network)
 REQ_RATE = 10
 
-DISCONNECTION_RATE = 0.01
+SCOPE_LIMIT = 2
+
+DISCONNECTION_RATE = 0.0001
 
 default = Tree()
 default['workload'] = {
@@ -137,10 +139,11 @@ for asn in [3257]:
 1. Cache hit rate for different probability
 """
 
-for strategy in ['SIT_ONLY']:
-    for caching_probability in [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]:
+for strategy in ['SCOPED_FLOODING', 'SIT_WITH_SCOPED_FLOODING', 'SIT_ONLY']:
+    # for caching_probability in [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]:
+    for caching_probability in [0.1, 0.5, 1.0]:
         experiment = copy.deepcopy(base)
-        if strategy is not 'SIT_ONLY':
+        if strategy is 'NDN':
             print "Not SIT"
             experiment['workload'] = {
                 'name':      'STATIONARY',
@@ -163,9 +166,11 @@ for strategy in ['SIT_ONLY']:
                 'disconnection_rate': DISCONNECTION_RATE
             }
             experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-                
+            
         experiment['topology']['asn'] = 3257 #3967
         experiment['strategy']['name'] = strategy
+        if strategy in ['SIT_WITH_SCOPED_FLOODING', 'SCOPED_FLOODING']:
+            experiment['strategy']['scope'] = SCOPE_LIMIT
         experiment['strategy']['p'] = caching_probability 
         experiment['joint_cache_rsn_placement']['network_rsn'] = 64* network_cache
         experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = 64

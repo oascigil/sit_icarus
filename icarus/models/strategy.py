@@ -32,7 +32,8 @@ __all__ = [
        'LiraChoice',
        'NearestReplicaRouting',
        'Sit_only',
-       'Sit_with_scoped_flooding'
+       'Sit_with_scoped_flooding',
+       'Scoped_flooding'
            ]
 
 #TODO: Implement BaseOnPath to reduce redundant code
@@ -284,6 +285,26 @@ class RsnEntry(object):
 
         return freshest
     
+    def get_topk_freshest_except_nodes(self, time, nodes, k):
+        """ 
+        Parameters
+        ----------
+        time : current time
+        nodes : list of nodes that are not considered when finding the freshest entry
+        k : max. number of nexthops returned
+
+        Returns 
+        -------
+        list of k most freshest nexthops : freshest (i.e., with min age) entry that is not stale and whose node attr is not equal to node
+        """
+        self.nexthops = [x for x in self.nexthops if not x.is_expired(time, self.expiration_interval)]
+        # Sort the list of nexthops by their age
+        self.nexthops.sort(key=get_timestamp, reverse=True)
+        
+        filtered_nexthops = self.nexthops[:]
+        filtered_nexthops = [x for x in filtered_nexthops if x.nexthop not in nodes]
+        return filtered_nexthops[0:k]
+
     def get_topk_freshest_except_node(self, time, node, k):
         """ 
         Parameters
@@ -436,6 +457,153 @@ class Hashrouting(Strategy):
         h = content % n
         return h if (content/n) % 2 == 0 else (n - h - 1)
 
+@register_strategy('SCOPED_FLOODING')
+class Scoped_flooding(Strategy):
+    """ Scoped flooding in ndn
+    """
+    def __init__(self, view, controller, p=1.0, scope = 0):
+        """Constructor
+        
+        Parameters
+        ----------
+        view : NetworkView
+            An instance of the network view
+        controller : NetworkController
+            An instance of the network controller
+        fan_out : string, optional
+            if 1, then pick the freshest entry
+            if >1, then use all the matching entries (bounded by the num. of interfaces
+        p : float, optional
+            The probability to insert a content in a cache. If 1, the strategy
+            always insert content, like a normal LCE, if less it behaves like
+            a Bernoulli random caching strategy
+        """
+        super(Scoped_flooding, self).__init__(view, controller)
+        self.p = p
+        self.topo = view.topology()
+        self.scope = scope
+        
+        self.receivers_list = list(self.topo.receivers())
+    
+    def disconnect_content(self, receiver, connections):
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = connections[receiver_index]
+        positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
+        ret = None
+        if len(positives) > 0:
+            key = random.choice(positives)
+            receiver_conns[key] -= 1
+            if receiver_conns[key] is 0:
+            # Remove the content from the cache
+                if not self.view.has_cache(receiver):
+                    raise ValueError('receiver has no Cache!')
+                ret = self.controller.remove_content_at_node(key, receiver)
+                if ret is None:
+                    raise ValueError('this should not happen in disconnect')
+                    
+            return key
+        else:
+            return None
+        
+    def return_content(self, off_path_trails, receiver, time):
+    # Return content SIT_only
+        sorted_paths = sorted(off_path_trails, key=len)
+        first = False
+        visited = {} # keep track of the visited nodes to eliminate duplicate data packets arriving at a hop (simulating PIT forwarding)
+        for path in sorted_paths:
+            if not first: # only forward the request of the shortest path
+                first = True
+                for hop in range(1, len(path)):
+                    u = path[hop - 1]
+                    v = path[hop]
+                    self.controller.forward_request_hop(u, v)
+            path.reverse()
+            for hop in range(1, len(path)):
+                curr_hop = path[hop]
+                prev_hop = path[hop-1]
+                if visited.get(prev_hop):
+                    break
+                visited[prev_hop] = True
+                # Insert content to cache
+                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                    self.controller.put_content(curr_hop)
+                elif self.view.has_cache(curr_hop):
+                    if self.p == 1.0 or random.random() <= self.p:
+                        self.controller.put_content(curr_hop)
+                # Forward the content
+                self.controller.forward_content_hop(prev_hop, curr_hop)
+        self.controller.end_session()
+
+    @inheritdoc(Strategy)
+    def process_event(self, time, receiver, content, log, connections=None):
+
+        if content == -1:
+        # Process a disconnect event
+            self.controller.start_session(time, receiver, 0, log)
+            self.disconnect_content(receiver, connections)
+            self.controller.end_session()
+            return
+        
+        self.controller.start_session(time, receiver, content, log)
+        # Source of content
+        source = self.view.content_source(content)
+
+        if self.view.has_cache(receiver):
+            if self.controller.get_content(receiver):
+                self.controller.end_session()
+                return
+        else:
+            raise ValueError('receiver has no cache')
+        
+        access_node = self.topo.neighbors(receiver)[0]
+        self.controller.forward_request_hop(receiver, access_node)
+        if self.view.has_cache(access_node):
+            if self.controller.get_content(access_node):
+                self.controller.forward_content_hop(access_node, receiver)
+                self.controller.end_session()
+                return
+        
+        # Start performing scoped flooding (one level at a time) 
+        nodes = [access_node]
+        trails = [[receiver, access_node]]
+        new_trails = []
+        off_path_trails = []
+        nodes_to_skip = []
+        visited = set([receiver, access_node])
+        for eachScope in range(1, self.scope+1):
+            new_trails = []
+            # extend the existing trails with neighbors
+            for trail in trails:
+                n = trail[len(trail)-1]
+                neighbors = self.topo.neighbors(n)
+                neighbors = list(set(neighbors) - set(visited))
+                for neighbor in neighbors:
+                    if neighbor in visited:
+                        continue
+                    visited.add(neighbor)
+                    new_trail = list(trail)
+                    new_trail.append(neighbor)
+                    new_trails.append(new_trail)
+            
+            # Check cache
+            trails_to_remove = []
+            for trail in new_trails:
+                n = trail[len(trail)-1]
+                if self.view.has_cache(n):
+                    if self.controller.get_content(n):
+                        off_path_trails.append(list(trail))
+                        if trail not in trails_to_remove:
+                            trails_to_remove.append(trail)
+            
+            # Remove trails that cache hit 
+            for trail in trails_to_remove:
+                new_trails.remove(trail)
+
+            trails = new_trails
+        # end of for eachScope in range(1, scope+1):
+
+        self.return_content(off_path_trails, receiver, time)
+
 
 @register_strategy('SIT_WITH_SCOPED_FLOODING')
 class Sit_with_scoped_flooding(Strategy):
@@ -539,7 +707,7 @@ class Sit_with_scoped_flooding(Strategy):
         rsn_entry = self.controller.get_rsn(v) if self.view.has_rsn_table(v) else None
         return rsn_entry
 
-    def return_content(self, off_path_trails):
+    def return_content(self, off_path_trails, receiver, time):
     # Return content SIT_only
         sorted_paths = sorted(off_path_trails, key=len)
         first = False
@@ -587,15 +755,6 @@ class Sit_with_scoped_flooding(Strategy):
         # Source of content
         source = self.view.content_source(content)
 
-
-        # Increment the connections for the content
-        receiver_index = self.receivers_list.index(receiver)
-        receiver_conns = connections[receiver_index]
-        if content in receiver_conns.keys():
-            receiver_conns[content] += 1
-        else: 
-            receiver_conns[content] = 1
-
         if self.view.has_cache(receiver):
             if self.controller.get_content(receiver):
                 self.controller.end_session()
@@ -621,11 +780,67 @@ class Sit_with_scoped_flooding(Strategy):
                 self.follow_offpath_trail(receiver, access_node, rsn_hop, trail, off_path_trails, source, time)
         
         if len(off_path_trails) > 0:
-            return_content(off_path_trails)
+            self.return_content(off_path_trails, receiver, time)
             return
 
-        for eachScope in range(1, scope):
-        
+        # Start performing scoped flooding (one level at a time) 
+        nodes = [access_node]
+        trails = [[receiver, access_node]]
+        new_trails = []
+        off_path_trails = []
+        nodes_to_skip = []
+        visited = set([receiver, access_node])
+        for eachScope in range(1, self.scope+1):
+            new_trails = []
+            # extend the existing trails with neighbors
+            for trail in trails:
+                n = trail[len(trail)-1]
+                neighbors = self.topo.neighbors(n)
+                neighbors = list(set(neighbors) - set(visited))
+                for neighbor in neighbors:
+                    if neighbor in visited:
+                        continue
+                    visited.add(neighbor)
+                    new_trail = list(trail)
+                    new_trail.append(neighbor)
+                    new_trails.append(new_trail)
+            
+            # Check cache
+            trails_to_remove = []
+            for trail in new_trails:
+                n = trail[len(trail)-1]
+                if self.view.has_cache(n):
+                    if self.controller.get_content(n):
+                        off_path_trails.append(list(trail))
+                        if trail not in trails_to_remove:
+                            trails_to_remove.append(trail)
+            # Remove trails that cache hit 
+            for trail in trails_to_remove:
+                new_trails.remove(trail)
+
+            # Sit forwarding
+            trails_to_remove = []
+            for trail in new_trails:
+                n = trail[len(trail)-1]
+                rsn_entry = self.lookup_rsn_at_node(n)
+                rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_nodes(time, visited , self.fan_out) if rsn_entry is not None else None
+
+                if rsn_entry is not None:
+                    for rsn_nexthop_obj in rsn_nexthop_objs:
+                        rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None
+                        if rsn_hop in visited:
+                            continue
+                        trail_end = self.follow_offpath_trail(trail[len(trail)-2], n, rsn_hop, trail, off_path_trails, source, time)
+                        if trail_end is not None and trail not in trails_to_remove:
+                            trails_to_remove.append(trail)
+            # Remove trails that had SIT 
+            for trail in trails_to_remove:
+                new_trails.remove(trail)
+
+            trails = new_trails
+        # end of for eachScope in range(1, scope+1):
+
+        self.return_content(off_path_trails, receiver, time)
 
 @register_strategy('SIT_ONLY')
 class Sit_only(Strategy):
@@ -741,15 +956,6 @@ class Sit_only(Strategy):
         self.controller.start_session(time, receiver, content, log)
         # Source of content
         source = self.view.content_source(content)
-
-
-        # Increment the connections for the content
-        receiver_index = self.receivers_list.index(receiver)
-        receiver_conns = connections[receiver_index]
-        if content in receiver_conns.keys():
-            receiver_conns[content] += 1
-        else: 
-            receiver_conns[content] = 1
 
         if self.view.has_cache(receiver):
             if self.controller.get_content(receiver):
