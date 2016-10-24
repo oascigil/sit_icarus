@@ -336,8 +336,7 @@ class AbsorptionCollector(DataCollector):
          
     @inheritdoc(DataCollector)
     def results(self):
-        mean_abs = (1.0*self.num_absorbed)/len(self.content_count.keys())
-        results = Tree(**{'MEAN': mean_abs})
+        results = Tree(**{'NUM_ABS': self.num_absorbed})
         results['MEAN_ABS_TIME'] = self.absorbtion_times/len(self.content_count.keys())
 
         return results

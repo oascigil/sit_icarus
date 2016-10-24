@@ -42,6 +42,9 @@ class StationarySitWorkload(object):
         self.n_contents = n_contents
         self.contents = range(1, n_contents + 1)
         self.n_connected = 0
+        num_receviers = len(topology.receivers())
+        self.connections = [dict() for x in range(num_receviers)]
+        self.receivers_list = list(topology.receivers())
         self.alpha = alpha
         self.rate = rate
         self.n_warmup = n_warmup
@@ -71,6 +74,14 @@ class StationarySitWorkload(object):
             req_counter += 1
             self.n_connected += 1
 
+            # Keep track of connections
+            receiver_index = self.receivers_list.index(receiver)
+            receiver_conns = self.connections[receiver_index]
+            if content in receiver_conns.keys():
+                receiver_conns[content] += 1
+            else: 
+                receiver_conns[content] = 1
+
         t_disconnect = t_event
         while req_counter < self.n_warmup + self.n_measured:
             t_event += (random.expovariate(self.rate))
@@ -82,7 +93,7 @@ class StationarySitWorkload(object):
                     receiver = self.receivers[self.receiver_dist.rv()-1]
                 content = -1
                 log = (req_counter >= self.n_warmup)
-                event = {'receiver': receiver, 'content': content, 'log': log}
+                event = {'receiver': receiver, 'content': content, 'log': log, 'connections': self.connections}
                 yield (t_event, event)
                 t_disconnect += random.expovariate(self.disconnection_rate*self.n_connected)
                 self.n_connected -= 1
@@ -93,9 +104,16 @@ class StationarySitWorkload(object):
                 receiver = self.receivers[self.receiver_dist.rv()-1]
             content = int(self.zipf.rv())
             log = (req_counter >= self.n_warmup)
-            event = {'receiver': receiver, 'content': content, 'log': log}
+            event = {'receiver': receiver, 'content': content, 'log': log, 'connections': self.connections}
             self.n_connected += 1
             yield (t_event, event)
+            # Keep track of connections
+            receiver_index = self.receivers_list.index(receiver)
+            receiver_conns = self.connections[receiver_index]
+            if content in receiver_conns.keys():
+                receiver_conns[content] += 1
+            else: 
+                receiver_conns[content] = 1
             req_counter += 1
 
         raise StopIteration()

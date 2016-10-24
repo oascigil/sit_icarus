@@ -78,7 +78,7 @@ default['workload'] = {
     'disconnection_rate': 0.01
     # 'beta':       BETA
                        }
-default['content_placement']['name'] = 'LOWEST_DEGREE'
+default['content_placement']['name'] = 'UNIFORM'
 default['cache_policy']['name'] = CACHE_POLICY
 
 # Instantiate experiment queue
@@ -90,8 +90,8 @@ base = copy.deepcopy(default)
 # Total size of network cache as a fraction of content population
 network_cache = 0.95 # 0.01
 base['topology']['name'] = 'ROCKET_FUEL'
-base['topology']['source_ratio'] = 0.1
-base['topology']['ext_delay'] = 5 # 34
+base['topology']['source_ratio'] = 1.0
+base['topology']['ext_delay'] = 2 # 34
 base['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
 base['joint_cache_rsn_placement'] = {'network_cache': network_cache}
 base['warmup_strategy']['name'] = WARMUP_STRATEGY
@@ -137,7 +137,7 @@ for asn in [3257]:
 1. Cache hit rate for different probability
 """
 
-for strategy in ['NDN', 'SIT_ONLY']:
+for strategy in ['SIT_ONLY']:
     for caching_probability in [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]:
         experiment = copy.deepcopy(base)
         if strategy is not 'SIT_ONLY':

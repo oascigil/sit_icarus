@@ -31,7 +31,8 @@ __all__ = [
        'LiraProbCache',
        'LiraChoice',
        'NearestReplicaRouting',
-       'Sit_only'
+       'Sit_only',
+       'Sit_with_scoped_flooding'
            ]
 
 #TODO: Implement BaseOnPath to reduce redundant code
@@ -436,11 +437,200 @@ class Hashrouting(Strategy):
         return h if (content/n) % 2 == 0 else (n - h - 1)
 
 
+@register_strategy('SIT_WITH_SCOPED_FLOODING')
+class Sit_with_scoped_flooding(Strategy):
+    """Sit strategy with scoped flooding 
+    """
+    def __init__(self, view, controller, p=1.0, fan_out=1000, scope = 0):
+        """Constructor
+        
+        Parameters
+        ----------
+        view : NetworkView
+            An instance of the network view
+        controller : NetworkController
+            An instance of the network controller
+        fan_out : string, optional
+            if 1, then pick the freshest entry
+            if >1, then use all the matching entries (bounded by the num. of interfaces
+        p : float, optional
+            The probability to insert a content in a cache. If 1, the strategy
+            always insert content, like a normal LCE, if less it behaves like
+            a Bernoulli random caching strategy
+        """
+        super(Sit_with_scoped_flooding, self).__init__(view, controller)
+        self.p = p
+        self.fan_out = fan_out
+        self.topo = view.topology()
+        self.scope = scope
+        
+        #num_receviers = len(self.topo.receivers())
+        #self.connections = [dict() for x in range(num_receviers)]
+        self.receivers_list = list(self.topo.receivers())
+    
+    def disconnect_content(self, receiver, connections):
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = connections[receiver_index]
+        positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
+        ret = None
+        if len(positives) > 0:
+            key = random.choice(positives)
+            receiver_conns[key] -= 1
+            if receiver_conns[key] is 0:
+            # Remove the content from the cache
+                if not self.view.has_cache(receiver):
+                    raise ValueError('receiver has no Cache!')
+                ret = self.controller.remove_content_at_node(key, receiver)
+                if ret is None:
+                    raise ValueError('this should not happen in disconnect')
+                    
+            return key
+        else:
+            return None
+        
+    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, on_path_trail, off_path_trails, source, time):
+        off_path_serving_node = None
+        trail = [curr_hop]
+        # This loop is guaranteed to execute at least once, as rsn_hop is not None
+        while rsn_hop is not None:
+            prev_hop = curr_hop
+            curr_hop = rsn_hop
+
+            if curr_hop in trail:
+            # loop in the explored off-path trail
+                self.controller.invalidate_trail(trail)
+                break
+
+            else:
+                trail.append(curr_hop)
+                if curr_hop == source or self.view.has_cache(curr_hop):
+                    if self.controller.get_content(curr_hop):
+                        trail = on_path_trail[:-1] + trail
+                        off_path_trails.append(trail)
+                        off_path_serving_node = curr_hop
+                        break
+
+                rsn_entry = self.lookup_rsn_at_node(curr_hop)
+                if rsn_entry is not None:
+                    rsn_nexthop_obj = rsn_entry.get_freshest_except_node(time, prev_hop)
+                    rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None
+
+                    if not len(rsn_entry.nexthops):
+                    # if the rsn entry's nexthops are  expired, remove
+                        self.controller.remove_rsn(curr_hop)
+                                    
+                else:
+                    rsn_hop = None
+        else: # else of while
+        # Onur: if break is executed above, this else is skipped
+        # This point is reached when I did explore an RSN
+        # trail but failed. 
+        # Invalidate the trail here and return to on-path node
+            # self.controller.invalidate_trail(trail)
+            
+            #TODO if, afer invalidation, there is no nexthop entries
+            # then delete the rsn entry
+            return None
+        
+        return off_path_serving_node
+
+
+    def lookup_rsn_at_node(self, v):
+        rsn_entry = self.controller.get_rsn(v) if self.view.has_rsn_table(v) else None
+        return rsn_entry
+
+    def return_content(self, off_path_trails):
+    # Return content SIT_only
+        sorted_paths = sorted(off_path_trails, key=len)
+        first = False
+        visited = {} # keep track of the visited nodes to eliminate duplicate data packets arriving at a hop (simulating PIT forwarding)
+        for path in sorted_paths:
+            if not first: # only forward the request of the shortest path
+                first = True
+                for hop in range(1, len(path)):
+                    u = path[hop - 1]
+                    v = path[hop]
+                    self.controller.forward_request_hop(u, v)
+            path.reverse()
+            for hop in range(1, len(path)):
+                curr_hop = path[hop]
+                prev_hop = path[hop-1]
+                if visited.get(prev_hop):
+                    break
+                visited[prev_hop] = True
+                # Insert/Update the rsn entry towards the direction of cache if such an entry existed (in the case of off-path hit)
+                rsn_entry = self.controller.get_rsn(prev_hop) if self.view.has_rsn_table(prev_hop) else None
+                rsn_entry = RsnEntry() if rsn_entry is None else rsn_entry
+                rsn_entry.insert_nexthop(curr_hop, curr_hop, len(path) - hop, time)
+                self.controller.put_rsn(prev_hop, rsn_entry)
+                # Insert content to cache
+                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                    self.controller.put_content(curr_hop)
+                elif self.view.has_cache(curr_hop):
+                    if self.p == 1.0 or random.random() <= self.p:
+                        self.controller.put_content(curr_hop)
+                # Forward the content
+                self.controller.forward_content_hop(prev_hop, curr_hop)
+        self.controller.end_session()
+
+    @inheritdoc(Strategy)
+    def process_event(self, time, receiver, content, log, connections=None):
+
+        if content == -1:
+        # Process a disconnect event
+            self.controller.start_session(time, receiver, 0, log)
+            self.disconnect_content(receiver, connections)
+            self.controller.end_session()
+            return
+        
+        self.controller.start_session(time, receiver, content, log)
+        # Source of content
+        source = self.view.content_source(content)
+
+
+        # Increment the connections for the content
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = connections[receiver_index]
+        if content in receiver_conns.keys():
+            receiver_conns[content] += 1
+        else: 
+            receiver_conns[content] = 1
+
+        if self.view.has_cache(receiver):
+            if self.controller.get_content(receiver):
+                self.controller.end_session()
+                return
+        else:
+            raise ValueError('receiver has no cache')
+        
+        access_node = self.topo.neighbors(receiver)[0]
+        self.controller.forward_request_hop(receiver, access_node)
+        if self.view.has_cache(access_node):
+            if self.controller.get_content(access_node):
+                self.controller.forward_content_hop(access_node, receiver)
+                self.controller.end_session()
+                return
+        # Perform SIT routing
+        rsn_entry = self.lookup_rsn_at_node(access_node)
+        rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, receiver, self.fan_out) if rsn_entry is not None else None
+        off_path_trails = []
+        if rsn_entry is not None:
+            trail = [receiver, access_node]
+            for rsn_nexthop_obj in rsn_nexthop_objs:
+                rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None
+                self.follow_offpath_trail(receiver, access_node, rsn_hop, trail, off_path_trails, source, time)
+        
+        if len(off_path_trails) > 0:
+            return_content(off_path_trails)
+            return
+
+        for eachScope in range(1, scope):
+        
+
 @register_strategy('SIT_ONLY')
 class Sit_only(Strategy):
     """Sit only strategy where requests only follow the rsn table
     """
-    
     def __init__(self, view, controller, p=1.0, fan_out=1000):
         """Constructor
         
@@ -463,13 +653,13 @@ class Sit_only(Strategy):
         self.fan_out = fan_out
         self.topo = view.topology()
         
-        num_receviers = len(self.topo.receivers())
-        self.connections = [dict() for x in range(num_receviers)]
+        #num_receviers = len(self.topo.receivers())
+        #self.connections = [dict() for x in range(num_receviers)]
         self.receivers_list = list(self.topo.receivers())
     
-    def disconnect_content(self, receiver):
+    def disconnect_content(self, receiver, connections):
         receiver_index = self.receivers_list.index(receiver)
-        receiver_conns = self.connections[receiver_index]
+        receiver_conns = connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
         ret = None
         if len(positives) > 0:
@@ -481,7 +671,7 @@ class Sit_only(Strategy):
                     raise ValueError('receiver has no Cache!')
                 ret = self.controller.remove_content_at_node(key, receiver)
                 if ret is None:
-                    raise ValueError('this should not happen')
+                    raise ValueError('this should not happen in disconnect')
                     
             return key
         else:
@@ -539,12 +729,12 @@ class Sit_only(Strategy):
         return rsn_entry
 
     @inheritdoc(Strategy)
-    def process_event(self, time, receiver, content, log):
+    def process_event(self, time, receiver, content, log, connections=None):
 
         if content == -1:
         # Process a disconnect event
             self.controller.start_session(time, receiver, 0, log)
-            self.disconnect_content(receiver)
+            self.disconnect_content(receiver, connections)
             self.controller.end_session()
             return
         
@@ -555,7 +745,7 @@ class Sit_only(Strategy):
 
         # Increment the connections for the content
         receiver_index = self.receivers_list.index(receiver)
-        receiver_conns = self.connections[receiver_index]
+        receiver_conns = connections[receiver_index]
         if content in receiver_conns.keys():
             receiver_conns[content] += 1
         else: 
@@ -609,7 +799,9 @@ class Sit_only(Strategy):
                 rsn_entry.insert_nexthop(curr_hop, curr_hop, len(path) - hop, time)
                 self.controller.put_rsn(prev_hop, rsn_entry)
                 # Insert content to cache
-                if self.view.has_cache(curr_hop):
+                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                    self.controller.put_content(curr_hop)
+                elif self.view.has_cache(curr_hop):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(curr_hop)
                 # Forward the content
@@ -1384,6 +1576,12 @@ class Ndn(Strategy):
         # Node serving the content off-path
 
         path = self.view.shortest_path(curr_hop, source)
+        # Check receiver's cache
+        if self.view.has_cache(path[0]):
+            if self.controller.get_content(path[0]):
+                self.controller.end_session()
+                return
+
         # Handle request        
         # Route requests to original source and queries caches on the path
         for hop in range(1, len(path)):
@@ -1405,7 +1603,9 @@ class Ndn(Strategy):
         for hop in range(1, len(path)):
             u = path[hop - 1]
             v = path[hop]
-            if self.view.has_cache(v):
+            if v is receiver and self.view.has_cache(v):
+                self.controller.put_content(v)
+            elif self.view.has_cache(v):
                 if self.p == 1.0 or random.random() <= self.p:
                     self.controller.put_content(v)
             # Insert/update rsn entry
