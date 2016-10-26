@@ -33,7 +33,9 @@ __all__ = [
        'NearestReplicaRouting',
        'Sit_only',
        'Sit_with_scoped_flooding',
-       'Scoped_flooding'
+       'Scoped_flooding',
+       'Ndn',
+       'Ndn_sit'
            ]
 
 #TODO: Implement BaseOnPath to reduce redundant code
@@ -600,6 +602,8 @@ class Scoped_flooding(Strategy):
                 new_trails.remove(trail)
 
             trails = new_trails
+            if len(trails) is 0:
+                break
         # end of for eachScope in range(1, scope+1):
 
         self.return_content(off_path_trails, receiver, time)
@@ -1744,6 +1748,107 @@ class RandomChoice(Strategy):
                 self.controller.put_content(v)
         self.controller.end_session() 
 
+
+@register_strategy('NDN_SIT')
+class Ndn_sit(Strategy):
+    """NDN strategy with shortest path routing and assuming all content origins are unreachable
+    At the same time, utilise the receiver-side cache and handle disconnections
+    """
+    def __init__(self, view, controller, p=1.0):
+        """Constructor
+        
+        Parameters
+        ----------
+        view : NetworkView
+            An instance of the network view
+        controller : NetworkController
+            An instance of the network controller
+        p : float, optional
+            The probability to insert a content in a cache. If 1, the strategy
+            always insert content, like a normal LCE, if less it behaves like
+            a Bernoulli random caching strategy
+        """
+        super(Ndn_sit, self).__init__(view, controller)
+        self.p = p
+        self.receivers_list = list(self.topo.receivers())
+
+    def disconnect_content(self, receiver, connections):
+        receiver_index = self.receivers_list.index(receiver)
+        receiver_conns = connections[receiver_index]
+        positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
+        ret = None
+        if len(positives) > 0:
+            key = random.choice(positives)
+            receiver_conns[key] -= 1
+            if receiver_conns[key] is 0:
+            # Remove the content from the cache
+                if not self.view.has_cache(receiver):
+                    raise ValueError('receiver has no Cache!')
+                ret = self.controller.remove_content_at_node(key, receiver)
+                if ret is None:
+                    raise ValueError('this should not happen in disconnect')
+                    
+            return key
+        else:
+            return None
+
+    @inheritdoc(Strategy)
+    def process_event(self, time, receiver, content, log, connections=None):
+        if content == -1:
+        # Process a disconnect event
+            self.controller.start_session(time, receiver, 0, log)
+            self.disconnect_content(receiver, connections)
+            self.controller.end_session()
+            return
+        self.controller.start_session(time, receiver, content, log)
+        # Source of content
+        source = self.view.content_source(content)
+
+        if not self.view.has_cache(receiver):
+            raise ValueError('receiver has no cache in NDN_sit strategy')
+        
+        # Start point of the request path
+        curr_hop = receiver
+        # Node serving the content on-path
+        serving_node = None
+        # Obtain the path from the receiver to the source
+        path = self.view.shortest_path(curr_hop, source)
+        
+        # Handle request        
+        # Route requests towards the original source but not including the source,
+        # at the same time query caches on the path
+        for hop in range(0, len(path)-1):
+            u = path[hop]
+            v = path[hop+1]
+            # Return if there is cache hit at v
+            if self.view.has_cache(u):
+                if self.controller.get_content(v):
+                    serving_node = v
+                    break
+            if v is not source:
+                self.controller.forward_content_hop(u, v)
+        else: # for concluded without break. Content is not found on-path, return requestback as a NACK (i.e., negative response)
+            path.reverse()
+            for hop in range(0, len(path)):
+                u = path[hop]
+                v = path[hop+1]
+                self.controller.forward_content_hop(u, v)
+        
+        # Return content, if found
+        if serving_node is not None:
+            path = self.view.shortest_path(serving_node, receiver)
+            for hop in range(1, len(path)):
+                u = path[hop - 1]
+                v = path[hop]
+                if v is receiver:
+                    self.controller.put_content(v)
+                elif self.view.has_cache(v):
+                    if self.p == 1.0 or random.random() <= self.p:
+                        self.controller.put_content(v)
+            self.controller.forward_content_hop(u, v)
+        
+        self.controller.end_session()
+
 @register_strategy('NDN')
 class Ndn(Strategy):
     """NDN strategy with shortest path routing and RSN routing up to a
@@ -1779,7 +1884,6 @@ class Ndn(Strategy):
         source = self.view.content_source(content)
         # Node serving the content on-path
         on_path_serving_node = None
-        # Node serving the content off-path
 
         path = self.view.shortest_path(curr_hop, source)
         # Check receiver's cache
@@ -1787,6 +1891,8 @@ class Ndn(Strategy):
             if self.controller.get_content(path[0]):
                 self.controller.end_session()
                 return
+        else:
+            raise ValueError('receiver has no cache in NDN_sit strategy')
 
         # Handle request        
         # Route requests to original source and queries caches on the path
