@@ -17,7 +17,7 @@ PARALLEL_EXECUTION = True
 
 # Number of processes used to run simulations in parallel.
 # This option is ignored if PARALLEL_EXECUTION = False
-N_PROCESSES = cpu_count()
+N_PROCESSES = cpu_count()/2
 
 # Granularity of caching.
 # Currently, only OBJECT is supported
@@ -107,9 +107,101 @@ base['warmup_strategy']['name'] = WARMUP_STRATEGY
 base['warmup_strategy']['p'] = CACHING_PROBABILITY
 
 """
+1. Cache hit (Satisfaction) rate for different probability
+"""
+
+# First Experiments 
+for strategy in ['NDN_SIT']:
+    for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+        experiment = copy.deepcopy(base)
+        experiment['workload'] = {
+            'name':      'STATIONARY_SIT',
+            'alpha':      ALPHA,
+            'n_contents': N_CONTENTS,
+            'n_warmup':   N_WARMUP,
+            'n_measured': N_MEASURED,
+            'rate':       REQ_RATE,
+            'disconnection_rate': DISCONNECTION_RATE
+        }
+        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+        experiment['strategy']['name'] = strategy
+        experiment['strategy']['p'] = caching_probability 
+        experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
+        EXPERIMENT_QUEUE.append(experiment)
+
+# First Experiments 
+for strategy in ['SIT_ONLY']:
+    for fan_out in [1, 100]: # ONE and ALL strategies
+       for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+            experiment = copy.deepcopy(base)
+            experiment['workload'] = {
+                'name':      'STATIONARY_SIT',
+                'alpha':      ALPHA,
+                'n_contents': N_CONTENTS,
+                'n_warmup':   N_WARMUP,
+                'n_measured': N_MEASURED,
+                'rate':       REQ_RATE,
+                'disconnection_rate': DISCONNECTION_RATE
+            }
+            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+            experiment['strategy']['name'] = strategy
+            experiment['strategy']['p'] = caching_probability 
+            experiment['strategy']['fan_out'] = fan_out
+            experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
+            EXPERIMENT_QUEUE.append(experiment)
+
+# First Experiments 
+for strategy in ['SIT_WITH_SCOPED_FLOODING']:
+    for fan_out in [1, 100]: # ONE and ALL strategies
+        for scope in [1, 2]:
+            for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+                experiment = copy.deepcopy(base)
+                experiment['workload'] = {
+                    'name':      'STATIONARY_SIT',
+                    'alpha':      ALPHA,
+                    'n_contents': N_CONTENTS,
+                    'n_warmup':   N_WARMUP,
+                    'n_measured': N_MEASURED,
+                    'rate':       REQ_RATE,
+                    'disconnection_rate': DISCONNECTION_RATE
+                }
+                experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+                experiment['topology']['asn'] = TOPOLOGY 
+                experiment['strategy']['name'] = strategy
+                experiment['strategy']['fan_out'] = fan_out
+                experiment['strategy']['scope'] = scope
+                experiment['strategy']['p'] = caching_probability 
+                experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
+                EXPERIMENT_QUEUE.append(experiment)
+
+# First Experiments 
+for strategy in ['SCOPED_FLOODING']:
+    for scope in [1, 2, 100]:
+        for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+            experiment = copy.deepcopy(base)
+            experiment['workload'] = {
+                'name':      'STATIONARY_SIT',
+                'alpha':      ALPHA,
+                'n_contents': N_CONTENTS,
+                'n_warmup':   N_WARMUP,
+                'n_measured': N_MEASURED,
+                'rate':       REQ_RATE,
+                'disconnection_rate': DISCONNECTION_RATE
+            }
+            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+            experiment['topology']['asn'] = TOPOLOGY 
+            experiment['strategy']['name'] = strategy
+            experiment['strategy']['scope'] = scope
+            experiment['strategy']['p'] = caching_probability 
+            experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
+            EXPERIMENT_QUEUE.append(experiment)
+
+
+"""
 2. The impact of the cache capacity of each router in the performance of the examined resilience strategies.
 """
 
+"""
 for strategy in ['NDN_SIT']:
     for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
         experiment = copy.deepcopy(base)
@@ -129,6 +221,7 @@ for strategy in ['NDN_SIT']:
         experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
         EXPERIMENT_QUEUE.append(experiment)
 
+# Second experiments
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
@@ -150,6 +243,7 @@ for strategy in ['SIT_ONLY']:
             experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
             EXPERIMENT_QUEUE.append(experiment)
 
+# Second experiments
 for strategy in ['SIT_WITH_SCOPED_FLOODING']:
     for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
         for fan_out in [1, 100]: # ONE and ALL strategies
@@ -173,6 +267,7 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
                 experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
                 EXPERIMENT_QUEUE.append(experiment)
 
+# Second experiments
 for strategy in ['SCOPED_FLOODING']:
     for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
         for scope in [1, 2, 100]: 
@@ -194,7 +289,12 @@ for strategy in ['SCOPED_FLOODING']:
             experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
             EXPERIMENT_QUEUE.append(experiment)
 """
+
+
+"""
 3. The impact of the disconnection rate of the users in the performance of the examined resilience strategies
+"""
+
 """
 for strategy in ['NDN_SIT']:
     for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
@@ -213,6 +313,7 @@ for strategy in ['NDN_SIT']:
         experiment['desc'] = "strategy: %s disconnection rate: %s" % (str(strategy), str(disconnection_rate))
         EXPERIMENT_QUEUE.append(experiment)
 
+# Third Experiments
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
@@ -232,6 +333,7 @@ for strategy in ['SIT_ONLY']:
             experiment['desc'] = "strategy: %s disconnection rate: %s fan_out: %s" % (str(strategy), str(disconnection_rate), str(fan_out))
             EXPERIMENT_QUEUE.append(experiment)
 
+# Third Experiments
 for strategy in ['SIT_WITH_SCOPED_FLOODING']:
     for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
         for fan_out in [1, 100]: # ONE and ALL strategies
@@ -253,6 +355,7 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
                 experiment['desc'] = "strategy: %s disconnection rate: %s fan_out: %s, scope: %s" % (str(strategy), str(disconnection_rate), str(fan_out), str(scope))
                 EXPERIMENT_QUEUE.append(experiment)
 
+# Third Experiments
 for strategy in ['SCOPED_FLOODING']:
     for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
         for scope in [1, 2, 100]:
@@ -273,107 +376,13 @@ for strategy in ['SCOPED_FLOODING']:
             EXPERIMENT_QUEUE.append(experiment)
 
 """
-1. Cache hit (Satisfaction) rate for different probability
-"""
 
-# First do the NDN experiment:
-for strategy in ['NDN_SIT']:
-    for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
-        experiment = copy.deepcopy(base)
-        experiment['workload'] = {
-            'name':      'STATIONARY_SIT',
-            'alpha':      ALPHA,
-            'n_contents': N_CONTENTS,
-            'n_warmup':   N_WARMUP,
-            'n_measured': N_MEASURED,
-            'rate':       REQ_RATE,
-            'disconnection_rate': DISCONNECTION_RATE
-        }
-        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-        experiment['strategy']['name'] = strategy
-        experiment['strategy']['p'] = caching_probability 
-        experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache
-        experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
-        experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
-        EXPERIMENT_QUEUE.append(experiment)
-
-# Do experiments for SIT_only for ONE and ALL cases
-for strategy in ['SIT_ONLY']:
-    for fan_out in [1, 100]: # ONE and ALL strategies
-       for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
-            experiment = copy.deepcopy(base)
-            experiment['workload'] = {
-                'name':      'STATIONARY_SIT',
-                'alpha':      ALPHA,
-                'n_contents': N_CONTENTS,
-                'n_warmup':   N_WARMUP,
-                'n_measured': N_MEASURED,
-                'rate':       REQ_RATE,
-                'disconnection_rate': DISCONNECTION_RATE
-            }
-            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-            experiment['strategy']['name'] = strategy
-            experiment['strategy']['p'] = caching_probability 
-            experiment['strategy']['fan_out'] = fan_out
-            experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache
-            experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
-            experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
-            EXPERIMENT_QUEUE.append(experiment)
-
-# Sit with scoped flooding
-for strategy in ['SIT_WITH_SCOPED_FLOODING']:
-    for fan_out in [1, 100]: # ONE and ALL strategies
-        for scope in [1, 2]:
-            for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
-                experiment = copy.deepcopy(base)
-                experiment['workload'] = {
-                    'name':      'STATIONARY_SIT',
-                    'alpha':      ALPHA,
-                    'n_contents': N_CONTENTS,
-                    'n_warmup':   N_WARMUP,
-                    'n_measured': N_MEASURED,
-                    'rate':       REQ_RATE,
-                    'disconnection_rate': DISCONNECTION_RATE
-                }
-                experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-                experiment['topology']['asn'] = TOPOLOGY 
-                experiment['strategy']['name'] = strategy
-                experiment['strategy']['fan_out'] = fan_out
-                experiment['strategy']['scope'] = scope
-                experiment['strategy']['p'] = caching_probability 
-                experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache  
-                experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
-                experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
-                EXPERIMENT_QUEUE.append(experiment)
-
-# Pure scoped flooding 
-for strategy in ['SCOPED_FLOODING']:
-    for scope in [1, 2, 100]:
-        for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
-            experiment = copy.deepcopy(base)
-            experiment['workload'] = {
-                'name':      'STATIONARY_SIT',
-                'alpha':      ALPHA,
-                'n_contents': N_CONTENTS,
-                'n_warmup':   N_WARMUP,
-                'n_measured': N_MEASURED,
-                'rate':       REQ_RATE,
-                'disconnection_rate': DISCONNECTION_RATE
-            }
-            experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-            experiment['topology']['asn'] = TOPOLOGY 
-            experiment['strategy']['name'] = strategy
-            experiment['strategy']['scope'] = scope
-            experiment['strategy']['p'] = caching_probability 
-            experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache  
-            experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
-            experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(caching_probability))
-            EXPERIMENT_QUEUE.append(experiment)
 
 """
 4. The impact of the popularity distribution in the performance of the examined resilience strategies.
 """
-# First do the NDN experiment:
+"""
+# Fourth Experiments
 for strategy in ['NDN_SIT']:
     for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
         experiment = copy.deepcopy(base)
@@ -392,7 +401,7 @@ for strategy in ['NDN_SIT']:
         experiment['desc'] = "strategy: %s alpha: %s" % (str(strategy), str(alpha))
         EXPERIMENT_QUEUE.append(experiment)
 
-# Do experiments for SIT_only for ONE and ALL cases
+# Fourth Experiments
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
@@ -413,7 +422,7 @@ for strategy in ['SIT_ONLY']:
             experiment['desc'] = "strategy: %s alpha: %s" % (str(strategy), str(alpha))
             EXPERIMENT_QUEUE.append(experiment)
 
-# Sit with scoped flooding
+# Fourth Experiments
 for strategy in ['SIT_WITH_SCOPED_FLOODING']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for scope in [1, 2]:
@@ -437,7 +446,7 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
                 experiment['desc'] = "strategy: %s alpha: %s" % (str(strategy), str(alpha))
                 EXPERIMENT_QUEUE.append(experiment)
 
-# Pure scoped flooding 
+# Fourth Experiments
 for strategy in ['SCOPED_FLOODING']:
     for scope in [1, 2, 100]:
         for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
@@ -457,4 +466,4 @@ for strategy in ['SCOPED_FLOODING']:
             experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
             experiment['desc'] = "strategy: %s caching probability: %s" % (str(strategy), str(alpha))
             EXPERIMENT_QUEUE.append(experiment)
-
+"""

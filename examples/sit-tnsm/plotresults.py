@@ -1098,12 +1098,12 @@ def print_latency_experiments_gnuplot(lst, strategies, probabilities, extra_quot
             f.write('\n')   
         f.close()                   
     
-def print_first_experiment_data_gnuplot(lst, strategies):
+def print_first_experiment_data_gnuplot(lst):
     """
     Print Gnuplot data for the first experiments: impact of caching probaility on the satisfaction and overhead when network is disconnected.
 
     """
-    probabilities = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+    probabilities = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     scopes = [1, 2, 100]
     fan_outs = [1, 100]
 
@@ -1293,7 +1293,7 @@ def print_second_experiment_data_gnuplot(lst):
     """
     Print Gnuplot data for the second experiments: impact of DFIB size on cache hits on different strategies
     """
-    network_cache = [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
+    network_cache = [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]
     scopes = [1, 2, 100]
     fan_outs = [1, 100]
 

@@ -1770,6 +1770,7 @@ class Ndn_sit(Strategy):
         """
         super(Ndn_sit, self).__init__(view, controller)
         self.p = p
+        self.topo = view.topology()
         self.receivers_list = list(self.topo.receivers())
 
     def disconnect_content(self, receiver, connections):
