@@ -1114,7 +1114,7 @@ def print_first_experiment_data_gnuplot(lst):
         f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
         f.write('#\n')
     
-        f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+        f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead\n')
 
         for probability in probabilities:
             f.write(repr(probability) + '\t')
@@ -1143,6 +1143,7 @@ def print_first_experiment_data_gnuplot(lst):
                 f.write(repr(overhead) + '\t')
             else:
                 print 'Error reading overhead'
+            f.write('\n')
         f.close()                   
         
     # First experiments
@@ -1151,11 +1152,11 @@ def print_first_experiment_data_gnuplot(lst):
             filename = ""
             if fan_out is 1:
                 filename += strategy
-                filename += "ONE_first"
+                filename += "_ONE_first"
                 filename += '.dat'
             else:
                 filename += strategy
-                filename += "ALL_first"
+                filename += "_ALL_first"
                 filename += '.dat'
 
             f = open(filename, 'w')
@@ -1163,7 +1164,7 @@ def print_first_experiment_data_gnuplot(lst):
             f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
             f.write('#\n')
     
-            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead\n')
 
             for probability in probabilities:
                 f.write(repr(probability) + '\t')
@@ -1192,12 +1193,15 @@ def print_first_experiment_data_gnuplot(lst):
                     f.write(repr(overhead) + '\t')
                 else:
                     print 'Error reading overhead'
+                f.write('\n')
             f.close()   # for each fanout                
     
     # First experiments
     for strategy in ['SIT_WITH_SCOPED_FLOODING']:
         for fan_out in fan_outs:
             for scope in scopes:
+                if scope is 100:
+                    continue
                 filename = ""
                 if fan_out is 1:
                     filename += strategy
@@ -1216,7 +1220,7 @@ def print_first_experiment_data_gnuplot(lst):
                 f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
                 f.write('#\n')
     
-                f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+                f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead\n')
 
                 for probability in probabilities:
                     mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN')
@@ -1244,6 +1248,7 @@ def print_first_experiment_data_gnuplot(lst):
                         f.write(repr(overhead) + '\t')
                     else:
                         print 'Error reading overhead'
+                    f.write('\n')
                 f.close()   # for each scope
 
     # First experiments
@@ -1259,7 +1264,7 @@ def print_first_experiment_data_gnuplot(lst):
             f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
             f.write('#\n')
     
-            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead\n')
 
             for probability in probabilities:
                 mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN')
@@ -1287,6 +1292,7 @@ def print_first_experiment_data_gnuplot(lst):
                     f.write(repr(overhead) + '\t')
                 else:
                     print 'Error reading overhead'
+                f.write('\n')
             f.close()   # for each scope
 
 def print_second_experiment_data_gnuplot(lst):

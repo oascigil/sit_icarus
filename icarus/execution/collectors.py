@@ -407,18 +407,30 @@ class OverheadCollector(DataCollector):
         self.view = view
         self.num_data = 0.0
         self.sess_count = 0
+        self.satisfied_conn = 0 # sessions during which content is returned
+        self.is_sat = False
 
     @inheritdoc(DataCollector)
     def content_hop(self, u, v, main_path=True):
         self.num_data += 1
+        if self.is_sat is False:
+            self.is_sat is True
+            self.satisfied_conn += 1
+    
+    @inheritdoc(DataCollector)
+    def cache_hit(self, node):
+        if self.is_sat is False:
+            self.is_sat is True
+            self.satisfied_conn += 1
 
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
         self.sess_count += 1
+        self.is_sat = False
     
     @inheritdoc(DataCollector)
     def results(self):
-        results = Tree({'MEAN': self.num_data/self.sess_count})
+        results = Tree({'MEAN': self.num_data/self.satisfied_conn})
         
         return results
 
