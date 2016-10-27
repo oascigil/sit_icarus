@@ -1098,127 +1098,387 @@ def print_latency_experiments_gnuplot(lst, strategies, probabilities, extra_quot
             f.write('\n')   
         f.close()                   
     
-def print_cachehit_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):
+def print_first_experiment_data_gnuplot(lst, strategies):
     """
-    Write cache hits (off- and on-path) for different strategies for various probabilities and extra quota values
-    to a file in gnuplot format
+    Print Gnuplot data for the first experiments: impact of caching probaility on the satisfaction and overhead when network is disconnected.
 
     """
+    probabilities = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+    scopes = [1, 2, 100]
+    fan_outs = [1, 100]
 
-    for strategy in strategies:
-        filename = strategy + '_cachehits.dat'
+    for strategy in ['NDN_SIT']:
+        filename = strategy + '_first.dat'
         f = open(filename, 'w')
 
-        f.write('# Cachehit for strategy ' + strategy + '\n')
+        f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
         f.write('#\n')
     
-        f.write('ExtraQuota\t')
-        for extra_quota in extra_quotas:
-            f.write(repr(extra_quota) + 'Offpath' + '\t')
-            f.write(repr(extra_quota) + 'Onpath' + '\t')
-
-        f.write('\n')   
+        f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
 
         for probability in probabilities:
             f.write(repr(probability) + '\t')
-            for extra_quota in extra_quotas:
-                off = searchDict(lst, 'strategy', {'name' : strategy, 'extra_quota' : extra_quota, 'p' : probability}, 3, 'CACHE_HIT_RATIO', 'MEAN_OFF_PATH')
-                on = searchDict(lst, 'strategy', {'name' : strategy, 'extra_quota' : extra_quota, 'p' : probability}, 3, 'CACHE_HIT_RATIO', 'MEAN_ON_PATH')
-                if on is not None and off is not None:
-                    f.write(repr(off) + '\t')
-                    f.write(repr(on) + '\t')
-            f.write('\n')   
+            
+            mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN')
+            user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+            net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+            overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'OVERHEAD', 'MEAN')
+
+            if mean_hits is not None:
+                f.write(repr(mean_hits) + '\t')
+            else:
+                print 'Error reading mean cache hits'
+
+            if user_hits is not None:
+                f.write(repr(user_hits) + '\t')
+            else:
+                print 'Error reading user cache hits'
+
+            if net_hits is not None:    
+                f.write(repr(net_hits) + '\t')
+            else:
+                print 'Error reading network cache hits'
+
+            if overhead is not None:
+                f.write(repr(overhead) + '\t')
+            else:
+                print 'Error reading overhead'
         f.close()                   
+        
+    # First experiments
+    for strategy in ['SIT_ONLY']:
+        for fan_out in fan_outs:
+            filename = ""
+            if fan_out is 1:
+                filename += strategy
+                filename += "ONE_first"
+                filename += '.dat'
+            else:
+                filename += strategy
+                filename += "ALL_first"
+                filename += '.dat'
 
-def print_first_experiment_data(lst):
-    """
-    Print Gnuplot data for the first experiments: impact of caching probaility and extra quota on the cache hits, latency, overhead, sat. rate using different strategies.
+            f = open(filename, 'w')
 
-    """
-    strategies = ['LIRA_DFIB', 'LIRA_DFIB_OPH', 'LIRA_BC_HYBRID']
-    extra_quotas = [2, 3, 4, 5]
-    probabilities = [0.1, 0.25, 0.33, 0.5, 0.66, 0.75, 1.0]
+            f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+            f.write('#\n')
+    
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
 
-    # print cachehit results for each strategy 
-    print_cachehit_experiments_gnuplot(lst, strategies, probabilities, extra_quotas)
-    print_latency_experiments_gnuplot(lst, strategies, probabilities, extra_quotas)
-    print_overhead_experiments_gnuplot(lst, strategies, probabilities, extra_quotas)
-    print_satrate_experiments_gnuplot(lst, strategies, probabilities, extra_quotas)
+            for probability in probabilities:
+                f.write(repr(probability) + '\t')
+            
+                mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN')
+                user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'OVERHEAD', 'MEAN')
 
-def print_second_experiment_data(lst):
+                if mean_hits is not None:
+                    f.write(repr(mean_hits) + '\t')
+                else:
+                    print 'Error reading mean cache hits'
+
+                if user_hits is not None:
+                    f.write(repr(user_hits) + '\t')
+                else:
+                    print 'Error reading user cache hits'
+
+                if net_hits is not None:    
+                    f.write(repr(net_hits) + '\t')
+                else:
+                    print 'Error reading network cache hits'
+
+                if overhead is not None:
+                    f.write(repr(overhead) + '\t')
+                else:
+                    print 'Error reading overhead'
+            f.close()   # for each fanout                
+    
+    # First experiments
+    for strategy in ['SIT_WITH_SCOPED_FLOODING']:
+        for fan_out in fan_outs:
+            for scope in scopes:
+                filename = ""
+                if fan_out is 1:
+                    filename += strategy
+                    filename += "_scope_%s" % (str(scope))
+                    filename += "_ONE"
+                    filename += "_first"
+                    filename += '.dat'
+                else:
+                    filename += strategy
+                    filename += "_scope_%s" % (str(scope))
+                    filename += "_ONE"
+                    filename += "_first"
+                    filename += '.dat'
+                f = open(filename, 'w')
+
+                f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+                f.write('#\n')
+    
+                f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+
+                for probability in probabilities:
+                    mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN')
+                    user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                    net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                    overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'OVERHEAD', 'MEAN')
+                    f.write(repr(probability) + '\t')
+
+                    if mean_hits is not None:
+                        f.write(repr(mean_hits) + '\t')
+                    else:
+                        print 'Error reading mean cache hits'
+
+                    if user_hits is not None:
+                        f.write(repr(user_hits) + '\t')
+                    else:
+                        print 'Error reading user cache hits'
+
+                    if net_hits is not None:    
+                        f.write(repr(net_hits) + '\t')
+                    else:
+                        print 'Error reading network cache hits'
+
+                    if overhead is not None:
+                        f.write(repr(overhead) + '\t')
+                    else:
+                        print 'Error reading overhead'
+                f.close()   # for each scope
+
+    # First experiments
+    for strategy in ['SCOPED_FLOODING']:
+        for scope in scopes:
+            filename = ""
+            filename += strategy
+            filename += "_scope_%s" % (str(scope))
+            filename += "_first"
+            filename += '.dat'
+            f = open(filename, 'w')
+
+            f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+            f.write('#\n')
+    
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+
+            for probability in probabilities:
+                mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN')
+                user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'OVERHEAD', 'MEAN')
+                f.write(repr(probability) + '\t')
+
+                if mean_hits is not None:
+                    f.write(repr(mean_hits) + '\t')
+                else:
+                    print 'Error reading mean cache hits'
+
+                if user_hits is not None:
+                    f.write(repr(user_hits) + '\t')
+                else:
+                    print 'Error reading user cache hits'
+
+                if net_hits is not None:    
+                    f.write(repr(net_hits) + '\t')
+                else:
+                    print 'Error reading network cache hits'
+
+                if overhead is not None:
+                    f.write(repr(overhead) + '\t')
+                else:
+                    print 'Error reading overhead'
+            f.close()   # for each scope
+
+def print_second_experiment_data_gnuplot(lst):
     """
     Print Gnuplot data for the second experiments: impact of DFIB size on cache hits on different strategies
     """
+    network_cache = [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
+    scopes = [1, 2, 100]
+    fan_outs = [1, 100]
+
+    for strategy in ['NDN_SIT']:
+        filename = strategy + '_second.dat'
+        f = open(filename, 'w')
+
+        f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+        f.write('#\n')
     
-    strategies = ['LIRA_DFIB', 'LIRA_DFIB_OPH', 'LIRA_BC_HYBRID']
-    rsn_ratios = [2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0]
+        f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
 
-    filename = '2_cachehits.dat'
-    f = open(filename, 'w')
+        for probability in probabilities:
+            f.write(repr(probability) + '\t')
+            
+            mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN')
+            user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+            net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+            overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability}, 2, 'OVERHEAD', 'MEAN')
 
-    f.write('# Cachehit for strategies: DFIB, DFIB_OPH, and DFIB_BC_HYBRID\n')
-    f.write('#\n')
-    
-    f.write('Strategy\t')
-    for strategy in strategies:
-        f.write(strategy + 'Off' + '\t')
-        f.write(strategy + 'On' + '\t')
+            if mean_hits is not None:
+                f.write(repr(mean_hits) + '\t')
+            else:
+                print 'Error reading mean cache hits'
 
-    f.write('\n')   
+            if user_hits is not None:
+                f.write(repr(user_hits) + '\t')
+            else:
+                print 'Error reading user cache hits'
 
-    for rsn_ratio in rsn_ratios:
-        f.write(repr(rsn_ratio) + '\t')
-        for strategy in strategies:
-            off = searchDictMultipleCat(lst, ['strategy', 'joint_cache_rsn_placement'], {'name' : strategy, 'rsn_cache_ratio' : rsn_ratio}, 2, 'CACHE_HIT_RATIO', 'MEAN_OFF_PATH')
-            on = searchDictMultipleCat(lst, ['strategy', 'joint_cache_rsn_placement'], {'name' : strategy, 'rsn_cache_ratio' : rsn_ratio}, 2, 'CACHE_HIT_RATIO', 'MEAN_ON_PATH')
-            if on is not None and off is not None:
-                f.write(repr(off) + '\t')
-                f.write(repr(on) + '\t')
-        f.write('\n')   
-    f.close()
+            if net_hits is not None:    
+                f.write(repr(net_hits) + '\t')
+            else:
+                print 'Error reading network cache hits'
 
-    # Write Latencies
-    filename = '2_latency.dat'
-    f = open(filename, 'w')
-
-    f.write('# Average latency for strategies: DFIB, DFIB_OPH, and DFIB_BC_HYBRID\n')
-    f.write('#\n')
-
-    f.write('Strategy\t')
-    for strategy in strategies:
-        f.write(strategy + '\t')
-
-    f.write('\n')   
-    for rsn_ratio in rsn_ratios:
-        f.write(repr(rsn_ratio) + '\t')
-        for strategy in strategies:
-            ltncy = searchDictMultipleCat(lst, ['strategy', 'joint_cache_rsn_placement'], {'name' : strategy, 'rsn_cache_ratio' : rsn_ratio}, 2, 'LATENCY', 'MEAN')
-            if ltncy is not None:
-                f.write(repr(ltncy) + '\t')
-        f.write('\n')   
-    f.close()
-
-    # Write Overhead
-
-    filename = '2_overhead.dat'
-    f = open(filename, 'w')
-
-    f.write('# Average overhead for strategies: DFIB, DFIB_OPH, and DFIB_BC_HYBRID\n')
-    f.write('#\n')
-
-    f.write('Strategy\t')
-    for strategy in strategies:
-        f.write(strategy + '\t')
-
-    f.write('\n')   
-    for rsn_ratio in rsn_ratios:
-        f.write(repr(rsn_ratio) + '\t')
-        for strategy in strategies:
-            overhead = searchDictMultipleCat(lst, ['strategy', 'joint_cache_rsn_placement'], {'name' : strategy, 'rsn_cache_ratio' : rsn_ratio}, 2, 'OVERHEAD', 'MEAN')
             if overhead is not None:
                 f.write(repr(overhead) + '\t')
-        f.write('\n')   
-    f.close()
+            else:
+                print 'Error reading overhead'
+        f.close()                   
+        
+    # Second experiments
+    for strategy in ['SIT_ONLY']:
+        for fan_out in fan_outs:
+            filename = ""
+            if fan_out is 1:
+                filename += strategy
+                filename += "ONE_second"
+                filename += '.dat'
+            else:
+                filename += strategy
+                filename += "ALL_second"
+                filename += '.dat'
+
+            f = open(filename, 'w')
+
+            f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+            f.write('#\n')
+    
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+
+            for probability in probabilities:
+                f.write(repr(probability) + '\t')
+            
+                mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN')
+                user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out}, 3, 'OVERHEAD', 'MEAN')
+
+                if mean_hits is not None:
+                    f.write(repr(mean_hits) + '\t')
+                else:
+                    print 'Error reading mean cache hits'
+
+                if user_hits is not None:
+                    f.write(repr(user_hits) + '\t')
+                else:
+                    print 'Error reading user cache hits'
+
+                if net_hits is not None:    
+                    f.write(repr(net_hits) + '\t')
+                else:
+                    print 'Error reading network cache hits'
+
+                if overhead is not None:
+                    f.write(repr(overhead) + '\t')
+                else:
+                    print 'Error reading overhead'
+            f.close()   # for each fanout                
+    
+    # Second experiments
+    for strategy in ['SIT_WITH_SCOPED_FLOODING']:
+        for fan_out in fan_outs:
+            for scope in scopes:
+                filename = ""
+                if fan_out is 1:
+                    filename += strategy
+                    filename += "_scope_%s" % (str(scope))
+                    filename += "_ONE"
+                    filename += "_second"
+                    filename += '.dat'
+                else:
+                    filename += strategy
+                    filename += "_scope_%s" % (str(scope))
+                    filename += "_ONE"
+                    filename += "_second"
+                    filename += '.dat'
+                f = open(filename, 'w')
+
+                f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+                f.write('#\n')
+    
+                f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+
+                for probability in probabilities:
+                    mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN')
+                    user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                    net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                    overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'fan_out' : fan_out, 'scope' : scope}, 4, 'OVERHEAD', 'MEAN')
+                    f.write(repr(probability) + '\t')
+
+                    if mean_hits is not None:
+                        f.write(repr(mean_hits) + '\t')
+                    else:
+                        print 'Error reading mean cache hits'
+
+                    if user_hits is not None:
+                        f.write(repr(user_hits) + '\t')
+                    else:
+                        print 'Error reading user cache hits'
+
+                    if net_hits is not None:    
+                        f.write(repr(net_hits) + '\t')
+                    else:
+                        print 'Error reading network cache hits'
+
+                    if overhead is not None:
+                        f.write(repr(overhead) + '\t')
+                    else:
+                        print 'Error reading overhead'
+                f.close()   # for each scope
+
+    # Second experiments
+    for strategy in ['SCOPED_FLOODING']:
+        for scope in scopes:
+            filename = ""
+            filename += strategy
+            filename += "_scope_%s" % (str(scope))
+            filename += "_second"
+            filename += '.dat'
+            f = open(filename, 'w')
+
+            f.write('# Satisfaction and Overhead for strategy ' + strategy + '\n')
+            f.write('#\n')
+    
+            f.write('# Probability\tMeanHits\tUserHits\tNetworkHits\tOverhead')
+
+            for probability in probabilities:
+                mean_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN')
+                user_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN_USER_HITS')
+                net_hits = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'CACHE_HIT_RATIO', 'MEAN_NETWORK_HITS')
+                overhead = searchDict(lst, 'strategy', {'name' : strategy, 'p' : probability, 'scope' : scope}, 3, 'OVERHEAD', 'MEAN')
+                f.write(repr(probability) + '\t')
+
+                if mean_hits is not None:
+                    f.write(repr(mean_hits) + '\t')
+                else:
+                    print 'Error reading mean cache hits'
+
+                if user_hits is not None:
+                    f.write(repr(user_hits) + '\t')
+                else:
+                    print 'Error reading user cache hits'
+
+                if net_hits is not None:    
+                    f.write(repr(net_hits) + '\t')
+                else:
+                    print 'Error reading network cache hits'
+
+                if overhead is not None:
+                    f.write(repr(overhead) + '\t')
+                else:
+                    print 'Error reading overhead'
+            f.close()   # for each scope
+    
 
 def plot_third_experiments(resultset, plotdir):
     topology = 3257
@@ -1320,7 +1580,8 @@ def run(resultsfile, plotdir):
         print 'RESULTS:\n'
         printTree(l[1])
 
-    #print_first_experiment_data(lst)
+    print_first_experiment_data_gnuplot(lst)
+    #print_second_experiment_data_gnuplot(lst)
     #print_strategies_experiments_gnuplot(lst)
     #print_second_experiment_data(lst)
     #plot_third_experiments(resultset, plotdir)
