@@ -1212,7 +1212,7 @@ def print_first_experiment_data_gnuplot(lst):
                 else:
                     filename += strategy
                     filename += "_scope_%s" % (str(scope))
-                    filename += "_ONE"
+                    filename += "_ALL"
                     filename += "_first"
                     filename += '.dat'
                 f = open(filename, 'w')

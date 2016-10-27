@@ -1822,18 +1822,18 @@ class Ndn_sit(Strategy):
             u = path[hop]
             v = path[hop+1]
             # Return if there is cache hit at v
-            if self.view.has_cache(u):
-                if self.controller.get_content(v):
-                    serving_node = v
+            if u is not receiver and self.view.has_cache(u):
+                if self.controller.get_content(u):
+                    serving_node = u
                     break
             if v is not source:
-                self.controller.forward_content_hop(u, v)
+                self.controller.forward_request_hop(u, v)
         else: # for concluded without break. Content is not found on-path, return requestback as a NACK (i.e., negative response)
             path.reverse()
             for hop in range(0, len(path)):
                 u = path[hop]
                 v = path[hop+1]
-                self.controller.forward_content_hop(u, v)
+                self.controller.forward_request_hop(u, v)
         
         # Return content, if found
         if serving_node is not None:
@@ -1846,7 +1846,7 @@ class Ndn_sit(Strategy):
                 elif self.view.has_cache(v):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(v)
-            self.controller.forward_content_hop(u, v)
+                self.controller.forward_content_hop(u, v)
         
         self.controller.end_session()
 
