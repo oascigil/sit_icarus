@@ -36,7 +36,7 @@ N_REPLICATIONS = 1
 # The implementation of data collectors are located in ./icaurs/execution/collectors.py
 DATA_COLLECTORS = ['ABS', 'CACHE_HIT_RATIO', 'OVERHEAD']
 
-# Strategy that will be executed during warm-up phase
+# Strategy that will be executed during warm-up phase:
 WARMUP_STRATEGY = 'NDN'
 
 #Probability of caching
@@ -63,13 +63,14 @@ N_WARMUP = 60*60*10 # 60 minutes
 # to generate results. 
 N_MEASURED = 3*60*60*10 # three hours
 # Number of requests per second (over the whole network)
-REQ_RATE = 10
+REQ_RATE = 100
 
 # Limit of scope for scoped flooding 
 SCOPE_LIMIT = 2
 # Cache storage size of the entire network (routers) in terms of percentage of content population
-NETWORK_CACHE = 0.90 # 0.01
-# Rate of disconnections per user (e.g., 0.01 means each user stays in the network for 100 secs on average)
+NETWORK_CACHE = 1.0 # 0.01
+# Rate of disconnections per user (e.g., 0.01 means each user stays in the network for 100 secs on average)
+# DISCONNECTION_RATE = 0.0025
 DISCONNECTION_RATE = 0.0025
 TOPOLOGY = 3257
 RSN_CACHE_RATIO = 64
@@ -176,7 +177,8 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
 
 # First Experiments 
 for strategy in ['SCOPED_FLOODING']:
-    for scope in [1, 2, 100]:
+    #for scope in [1, 2, 100]:
+    for scope in [1, 2]:
         for caching_probability in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
             experiment = copy.deepcopy(base)
             experiment['workload'] = {

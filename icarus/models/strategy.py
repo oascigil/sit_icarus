@@ -1830,7 +1830,7 @@ class Ndn_sit(Strategy):
                 self.controller.forward_request_hop(u, v)
         else: # for concluded without break. Content is not found on-path, return requestback as a NACK (i.e., negative response)
             path.reverse()
-            for hop in range(0, len(path)):
+            for hop in range(0, len(path)-1):
                 u = path[hop]
                 v = path[hop+1]
                 self.controller.forward_request_hop(u, v)
@@ -1888,12 +1888,14 @@ class Ndn(Strategy):
 
         path = self.view.shortest_path(curr_hop, source)
         # Check receiver's cache
-        if self.view.has_cache(path[0]):
-            if self.controller.get_content(path[0]):
-                self.controller.end_session()
-                return
-        else:
-            raise ValueError('receiver has no cache in NDN_sit strategy')
+        #if self.view.has_cache(path[0]):
+        #    if self.controller.get_content(path[0]):
+        #        self.controller.end_session()
+        #        return
+        #else:
+        #    raise ValueError('receiver has no cache in NDN_sit strategy')
+        if not self.view.has_cache(path[0]):
+            raise ValueError('receiver has no cache in NDN strategy')
 
         # Handle request        
         # Route requests to original source and queries caches on the path
