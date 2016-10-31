@@ -486,6 +486,7 @@ class Scoped_flooding(Strategy):
         self.scope = scope
         
         self.receivers_list = list(self.topo.receivers())
+        self.sources_list = list(self.topo.sources())
     
     def disconnect_content(self, receiver, connections):
         receiver_index = self.receivers_list.index(receiver)
@@ -528,7 +529,9 @@ class Scoped_flooding(Strategy):
                 visited[prev_hop] = True
                 # Insert content to cache
                 if curr_hop is receiver and self.view.has_cache(curr_hop):
-                    self.controller.put_content(curr_hop)
+                    item = self.controller.put_content(curr_hop)
+                    if item is not None:
+                        raise ValueError('in scoped flooding receiver cache should not evict!')
                 elif self.view.has_cache(curr_hop):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(curr_hop)
@@ -580,7 +583,7 @@ class Scoped_flooding(Strategy):
                 neighbors = self.topo.neighbors(n)
                 neighbors = list(set(neighbors) - set(visited))
                 for neighbor in neighbors:
-                    if neighbor in visited:
+                    if neighbor in visited or neighbor in self.sources_list:
                         continue
                     visited.add(neighbor)
                     new_trail = list(trail)
@@ -639,6 +642,7 @@ class Sit_with_scoped_flooding(Strategy):
         #num_receviers = len(self.topo.receivers())
         #self.connections = [dict() for x in range(num_receviers)]
         self.receivers_list = list(self.topo.receivers())
+        self.sources_list = list(self.topo.sources())
     
     def disconnect_content(self, receiver, connections):
         receiver_index = self.receivers_list.index(receiver)
@@ -737,7 +741,9 @@ class Sit_with_scoped_flooding(Strategy):
                 self.controller.put_rsn(prev_hop, rsn_entry)
                 # Insert content to cache
                 if curr_hop is receiver and self.view.has_cache(curr_hop):
-                    self.controller.put_content(curr_hop)
+                    item = self.controller.put_content(curr_hop)
+                    if item is not None:
+                        raise ValueError('in sit with scoped flooding receiver cache should not evict!')
                 elif self.view.has_cache(curr_hop):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(curr_hop)
@@ -802,7 +808,7 @@ class Sit_with_scoped_flooding(Strategy):
                 neighbors = self.topo.neighbors(n)
                 neighbors = list(set(neighbors) - set(visited))
                 for neighbor in neighbors:
-                    if neighbor in visited:
+                    if neighbor in visited or neighbor in self.receivers_list:
                         continue
                     visited.add(neighbor)
                     new_trail = list(trail)
@@ -1010,7 +1016,9 @@ class Sit_only(Strategy):
                 self.controller.put_rsn(prev_hop, rsn_entry)
                 # Insert content to cache
                 if curr_hop is receiver and self.view.has_cache(curr_hop):
-                    self.controller.put_content(curr_hop)
+                    item = self.controller.put_content(curr_hop)
+                    if item is not None:
+                        raise ValueError('in sit only receiver cache should not evict!')
                 elif self.view.has_cache(curr_hop):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(curr_hop)
@@ -1919,7 +1927,9 @@ class Ndn(Strategy):
             u = path[hop - 1]
             v = path[hop]
             if v is receiver and self.view.has_cache(v):
-                self.controller.put_content(v)
+                item = self.controller.put_content(v)
+                if item is not None:
+                    raise ValueError('in ndn: receiver cache should not evict!')
             elif self.view.has_cache(v):
                 if self.p == 1.0 or random.random() <= self.p:
                     self.controller.put_content(v)

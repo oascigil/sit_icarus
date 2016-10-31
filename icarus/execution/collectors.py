@@ -336,8 +336,11 @@ class AbsorptionCollector(DataCollector):
          
     @inheritdoc(DataCollector)
     def results(self):
+        # len(self.content_count.keys()) is the content population
+        # time is the duration of the experiment
         results = Tree(**{'NUM_ABS': self.num_absorbed})
-        results['MEAN_ABS_TIME'] = self.absorbtion_times/len(self.content_count.keys())
+        results['MEAN_ABS_TIME'] = self.time*(len(self.content_count.keys()) - self.num_absorbed) + self.absorbtion_times/len(self.content_count.keys())
+        print "The number of content keys is " + repr(len(self.content_count.keys())) + "\n"
 
         return results
 
@@ -416,13 +419,13 @@ class OverheadCollector(DataCollector):
         self.num_data += 1
         self.num_session_data += 1
         if self.is_sat is False:
-            self.is_sat is True
+            self.is_sat = True
             self.satisfied_conn += 1
     
     @inheritdoc(DataCollector)
     def cache_hit(self, node):
         if self.is_sat is False:
-            self.is_sat is True
+            self.is_sat = True
             self.satisfied_conn += 1
 
     @inheritdoc(DataCollector)
@@ -447,6 +450,9 @@ class OverheadCollector(DataCollector):
 class LatencyCollector(DataCollector):
     """Data collector measuring latency, i.e. the delay taken to delivery a
     content.
+
+    NOTE: This class is modified to count the minimum number of hops between a 
+    responding router or user and the user that issued the Interest packet.
     """
     
     def __init__(self, view, cdf=False):
@@ -477,13 +483,13 @@ class LatencyCollector(DataCollector):
         self.sess_latency = 0.0
         self.hit_indicator = False
         self.content_recvd = False
-        self.source = self.view.content_source(content)
+        # self.source = self.view.content_source(content)
     
-    @inheritdoc(DataCollector)
-    def request_hop(self, u, v, main_path=True):
-        if main_path:
-            if not self.hit_indicator:
-                self.sess_latency += self.view.link_delay(u, v)
+    #@inheritdoc(DataCollector)
+    #def request_hop(self, u, v, main_path=True):
+    #    if main_path:
+    #        if not self.hit_indicator:
+    #            self.sess_latency += 1 # self.view.link_delay(u, v)
     
     @inheritdoc(DataCollector)
     def cache_hit(self, node):
@@ -492,12 +498,17 @@ class LatencyCollector(DataCollector):
     @inheritdoc(DataCollector)
     def content_hop(self, u, v, main_path=True):
         if not self.content_recvd:
-            if u is self.source:
-                self.sess_latency += random.random()*self.server_latency
-            else:
-                self.sess_latency += self.view.link_delay(u, v)
+            self.sess_latency += 1
         if v is self.receiver:
             self.content_recvd = True
+
+        #if not self.content_recvd:
+        #    if u is self.source:
+        #        self.sess_latency += random.random()*self.server_latency
+        #    else:
+        #        self.sess_latency += self.view.link_delay(u, v)
+        #if v is self.receiver:
+        #    self.content_recvd = True
 
     @inheritdoc(DataCollector)
     def end_session(self, success=True):
@@ -505,6 +516,9 @@ class LatencyCollector(DataCollector):
             return
         if self.cdf:
             self.latency_data.append(self.sess_latency)
+        # Add 2 hops if the content is retrieved from another user
+        if self.hit_indicator is True and self.content_recvd is False:
+            self.sess_latency += 2
         self.latency += self.sess_latency
     
     @inheritdoc(DataCollector)

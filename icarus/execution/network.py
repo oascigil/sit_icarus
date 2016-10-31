@@ -433,7 +433,7 @@ class NetworkController(object):
         """
         self.collector = None
     
-    def start_session(self, timestamp, receiver, content, log):
+    def start_session(self, timestamp, receiver, content, log, counts=None):
         """Instruct the controller to start a new session (i.e. the retrieval
         of a content).
         
@@ -453,8 +453,10 @@ class NetworkController(object):
                             receiver=receiver,
                             content=content,
                             log=log)
-        if self.collector is not None and self.session['log']:
+        if counts is None and self.collector is not None and self.session['log']:
             self.collector.start_session(timestamp, receiver, content)
+        elif self.collector is not None and self.session['log']:
+            self.collector.start_session(timestamp, receiver, content, counts) 
     
     def forward_request_path(self, s, t, path=None, main_path=True):
         """Forward a request from node *s* to node *t* over the provided path.
@@ -535,10 +537,12 @@ class NetworkController(object):
             The evicted object or *None* if no contents were evicted.
         """
         if node in self.model.cache:
-            item = self.model.cache[node].put(self.session['content'])
             # if self.session['log']: ONUR: do not check this condition so that 
-            # we can report put_item events to the collector during warmup
-            self.collector.put_item(self.session['content'])
+            # we can report put_item events to the collector during warmup phase
+            if not self.model.cache[node].has(self.session['content']):
+                self.collector.put_item(self.session['content'])
+
+            item = self.model.cache[node].put(self.session['content'])
 
             if item is not None:
                 self.collector.evict_item(item)

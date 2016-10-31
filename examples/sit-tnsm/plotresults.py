@@ -1579,12 +1579,12 @@ def run(resultsfile, plotdir):
     """
     resultset = RESULTS_READER['PICKLE'](resultsfile)
     #Onur: added this BEGIN
-    lst = resultset.dump()
-    for l in lst:
-        print 'PARAMETERS:\n'    
-        printTree(l[0])
-        print 'RESULTS:\n'
-        printTree(l[1])
+    #lst = resultset.dump()
+    #for l in lst:
+    #    print 'PARAMETERS:\n'    
+    #    printTree(l[0])
+    #    print 'RESULTS:\n'
+    #    printTree(l[1])
 
     print_first_experiment_data_gnuplot(lst)
     #print_second_experiment_data_gnuplot(lst)

@@ -8,9 +8,12 @@ ALPHA	config.py	/^ALPHA = [0.6, 0.8, 1.0]$/;"	v
 ALPHA	examples/lanman/config.py	/^ALPHA = 0.8$/;"	v
 ALPHA	examples/lira/config.py	/^ALPHA = 0.8$/;"	v
 ALPHA	examples/offpath-vs-onpath-caching/config.py	/^ALPHA = [0.6, 0.8, 1.0, 1.2]$/;"	v
+ALPHA	examples/sit-tnsm/config.py	/^ALPHA = 0.7$/;"	v
 ALPHA	lira/config.py	/^ALPHA = 0.8$/;"	v
+AbsorptionCollector	icarus/execution/collectors.py	/^class AbsorptionCollector(DataCollector):$/;"	c
 AnyValue	icarus/util.py	/^class AnyValue(object):$/;"	c
 BETA	examples/lanman/config.py	/^BETA = 0.9$/;"	v
+BETA	examples/sit-tnsm/config.py	/^BETA = 0.9$/;"	v
 BW_COLOR_CATALOGUE	icarus/results/plot.py	/^BW_COLOR_CATALOGUE = ['k', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']$/;"	v
 BytesIO	icarus/test/test_tree.py	/^from io import BytesIO$/;"	i
 CACHE_PLACEMENT	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
@@ -19,6 +22,7 @@ CACHE_POLICY	config.py	/^CACHE_POLICY = 'LRU'$/;"	v
 CACHE_POLICY	examples/lanman/config.py	/^CACHE_POLICY = 'LRU'$/;"	v
 CACHE_POLICY	examples/lira/config.py	/^CACHE_POLICY = 'LRU'$/;"	v
 CACHE_POLICY	examples/offpath-vs-onpath-caching/config.py	/^CACHE_POLICY = 'LRU'$/;"	v
+CACHE_POLICY	examples/sit-tnsm/config.py	/^CACHE_POLICY = 'LRU'$/;"	v
 CACHE_POLICY	icarus/execution/network.py	/^from icarus.registry import CACHE_POLICY$/;"	i
 CACHE_POLICY	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
 CACHE_POLICY	icarus/registry.py	/^CACHE_POLICY = {}$/;"	v
@@ -28,8 +32,10 @@ CACHING_GRANULARITY	examples/lanman/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/
 CACHING_GRANULARITY	examples/lira/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/;"	v
 CACHING_GRANULARITY	examples/offpath-vs-onpath-caching/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/;"	v
 CACHING_GRANULARITY	examples/single-experiment-line-topology/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/;"	v
+CACHING_GRANULARITY	examples/sit-tnsm/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/;"	v
 CACHING_GRANULARITY	lira/config.py	/^CACHING_GRANULARITY = 'OBJECT'$/;"	v
 CACHING_PROBABILITY	examples/lanman/config.py	/^CACHING_PROBABILITY = 0.1$/;"	v
+CACHING_PROBABILITY	examples/sit-tnsm/config.py	/^CACHING_PROBABILITY = 0.1$/;"	v
 COLORMAP	icarus/results/visualize.py	/^COLORMAP = {'source':    'blue',$/;"	v
 CONTENT_PLACEMENT	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
 CONTENT_PLACEMENT	icarus/registry.py	/^CONTENT_PLACEMENT = {}$/;"	v
@@ -47,10 +53,13 @@ DATA_COLLECTORS	examples/lanman/config.py	/^DATA_COLLECTORS = ['SAT_RATE', 'CACH
 DATA_COLLECTORS	examples/lira/config.py	/^DATA_COLLECTORS = ['CONTROL_PLANE', 'CACHE_HIT_RATIO', 'LATENCY']$/;"	v
 DATA_COLLECTORS	examples/offpath-vs-onpath-caching/config.py	/^DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'LATENCY', 'LINK_LOAD', 'PATH_STRETCH']$/;"	v
 DATA_COLLECTORS	examples/single-experiment-line-topology/config.py	/^DATA_COLLECTORS = ['CACHE_HIT_RATIO', 'LATENCY']$/;"	v
+DATA_COLLECTORS	examples/sit-tnsm/config.py	/^DATA_COLLECTORS = ['ABS', 'CACHE_HIT_RATIO', 'OVERHEAD', 'LATENCY']$/;"	v
 DATA_COLLECTORS	lira/config.py	/^DATA_COLLECTORS = ['CONTROL_PLANE', 'CACHE_HIT_RATIO', 'LATENCY']$/;"	v
 DEPLOYMENT_LEGEND	examples/lanman/plotresults.py	/^DEPLOYMENT_LEGEND = {$/;"	v
 DEPLOYMENT_LEGEND	examples/lira/plotresults.py	/^DEPLOYMENT_LEGEND = {$/;"	v
+DEPLOYMENT_LEGEND	examples/sit-tnsm/plotresults.py	/^DEPLOYMENT_LEGEND = {$/;"	v
 DEPLOYMENT_LEGEND	lira/plotresults.py	/^DEPLOYMENT_LEGEND = {$/;"	v
+DISCONNECTION_RATE	examples/sit-tnsm/config.py	/^DISCONNECTION_RATE = 0.0025$/;"	v
 DataCollector	icarus/execution/collectors.py	/^class DataCollector(object):$/;"	c
 DiscreteDist	icarus/tools/cacheperf.py	/^from icarus.tools import TruncatedZipfDist, DiscreteDist$/;"	i
 DiscreteDist	icarus/tools/stats.py	/^class DiscreteDist(object):$/;"	c
@@ -60,6 +69,7 @@ EXPERIMENT_QUEUE	examples/lanman/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
 EXPERIMENT_QUEUE	examples/lira/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
 EXPERIMENT_QUEUE	examples/offpath-vs-onpath-caching/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
 EXPERIMENT_QUEUE	examples/single-experiment-line-topology/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
+EXPERIMENT_QUEUE	examples/sit-tnsm/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
 EXPERIMENT_QUEUE	lira/config.py	/^EXPERIMENT_QUEUE = deque()$/;"	v
 EXTERNAL_LINK_DELAY	icarus/scenarios/topology.py	/^EXTERNAL_LINK_DELAY = 3 * 34$/;"	v
 Edge	icarus/models/strategy.py	/^class Edge(Strategy):$/;"	c
@@ -85,6 +95,7 @@ LOG_LEVEL	examples/lanman/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
 LOG_LEVEL	examples/lira/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
 LOG_LEVEL	examples/offpath-vs-onpath-caching/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
 LOG_LEVEL	examples/single-experiment-line-topology/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
+LOG_LEVEL	examples/sit-tnsm/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
 LOG_LEVEL	lira/config.py	/^LOG_LEVEL = 'INFO'$/;"	v
 LatencyCollector	icarus/execution/collectors.py	/^class LatencyCollector(DataCollector):$/;"	c
 LeaveCopyDown	icarus/models/strategy.py	/^class LeaveCopyDown(Strategy):$/;"	c
@@ -102,6 +113,7 @@ LiraProbCache	icarus/models/strategy.py	/^class LiraProbCache(Strategy):$/;"	c
 LruCache	icarus/models/cache.py	/^class LruCache(Cache):$/;"	c
 NETWORK_CACHE	config.py	/^NETWORK_CACHE = [0.004, 0.002]$/;"	v
 NETWORK_CACHE	examples/offpath-vs-onpath-caching/config.py	/^NETWORK_CACHE = [0.004, 0.002, 0.01, 0.05]$/;"	v
+NETWORK_CACHE	examples/sit-tnsm/config.py	/^NETWORK_CACHE = 1.0 # 0.01$/;"	v
 NETWORK_REQUEST_RATE	config.py	/^NETWORK_REQUEST_RATE = 12.0$/;"	v
 NETWORK_REQUEST_RATE	examples/offpath-vs-onpath-caching/config.py	/^NETWORK_REQUEST_RATE = 12.0$/;"	v
 N_CONTENTS	config.py	/^N_CONTENTS = 3*10**5$/;"	v
@@ -109,11 +121,13 @@ N_CONTENTS	examples/lanman/config.py	/^N_CONTENTS = 10**4$/;"	v
 N_CONTENTS	examples/lira/config.py	/^N_CONTENTS = 3*10$/;"	v
 N_CONTENTS	examples/lira/config.py	/^N_CONTENTS = 3*10**5$/;"	v
 N_CONTENTS	examples/offpath-vs-onpath-caching/config.py	/^N_CONTENTS = 3*10**5$/;"	v
+N_CONTENTS	examples/sit-tnsm/config.py	/^N_CONTENTS = 10**4$/;"	v
 N_CONTENTS	lira/config.py	/^N_CONTENTS = 3*10**2$/;"	v
 N_CONTENTS	lira/config.py	/^N_CONTENTS = 3*10**5$/;"	v
 N_MEASURED	examples/lanman/config.py	/^N_MEASURED = 36*10**5 # one hour$/;"	v
 N_MEASURED	examples/lira/config.py	/^N_MEASURED = 4*10**2$/;"	v
 N_MEASURED	examples/lira/config.py	/^N_MEASURED = 4*10**5$/;"	v
+N_MEASURED	examples/sit-tnsm/config.py	/^N_MEASURED = 3*60*60*10 # three hours$/;"	v
 N_MEASURED	lira/config.py	/^N_MEASURED = 4*10**2$/;"	v
 N_MEASURED	lira/config.py	/^N_MEASURED = 4*10**5$/;"	v
 N_MEASURED_REQUESTS	config.py	/^N_MEASURED_REQUESTS = 6*10**5$/;"	v
@@ -123,21 +137,25 @@ N_PROCESSES	examples/lanman/config.py	/^N_PROCESSES = cpu_count()\/3$/;"	v
 N_PROCESSES	examples/lira/config.py	/^N_PROCESSES = cpu_count()$/;"	v
 N_PROCESSES	examples/offpath-vs-onpath-caching/config.py	/^N_PROCESSES = cpu_count()$/;"	v
 N_PROCESSES	examples/single-experiment-line-topology/config.py	/^N_PROCESSES = cpu_count()$/;"	v
+N_PROCESSES	examples/sit-tnsm/config.py	/^N_PROCESSES = cpu_count()\/4$/;"	v
 N_PROCESSES	lira/config.py	/^N_PROCESSES = cpu_count()$/;"	v
 N_REPLICATIONS	config.py	/^N_REPLICATIONS = 3$/;"	v
 N_REPLICATIONS	examples/lanman/config.py	/^N_REPLICATIONS = 1$/;"	v
 N_REPLICATIONS	examples/lira/config.py	/^N_REPLICATIONS = 3$/;"	v
 N_REPLICATIONS	examples/offpath-vs-onpath-caching/config.py	/^N_REPLICATIONS = 2$/;"	v
 N_REPLICATIONS	examples/single-experiment-line-topology/config.py	/^N_REPLICATIONS = 1$/;"	v
+N_REPLICATIONS	examples/sit-tnsm/config.py	/^N_REPLICATIONS = 1$/;"	v
 N_REPLICATIONS	lira/config.py	/^N_REPLICATIONS = 3$/;"	v
 N_WARMUP	examples/lanman/config.py	/^N_WARMUP = 36*10**4 # 6 minutes$/;"	v
 N_WARMUP	examples/lira/config.py	/^N_WARMUP = 2*10**2$/;"	v
 N_WARMUP	examples/lira/config.py	/^N_WARMUP = 2*10**5$/;"	v
+N_WARMUP	examples/sit-tnsm/config.py	/^N_WARMUP = 60*60*10 # 60 minutes$/;"	v
 N_WARMUP	lira/config.py	/^N_WARMUP = 2*10**2$/;"	v
 N_WARMUP	lira/config.py	/^N_WARMUP = 2*10**5$/;"	v
 N_WARMUP_REQUESTS	config.py	/^N_WARMUP_REQUESTS = 3*10**5$/;"	v
 N_WARMUP_REQUESTS	examples/offpath-vs-onpath-caching/config.py	/^N_WARMUP_REQUESTS = 3*10**5$/;"	v
 Ndn	icarus/models/strategy.py	/^class Ndn(Strategy):$/;"	c
+Ndn_sit	icarus/models/strategy.py	/^class Ndn_sit(Strategy):$/;"	c
 NearestReplicaRouting	icarus/models/strategy.py	/^class NearestReplicaRouting(Strategy):$/;"	c
 NearestReplicaRoutingProb	icarus/models/strategy.py	/^class NearestReplicaRoutingProb(Strategy):$/;"	c
 NetworkController	icarus/execution/engine.py	/^from icarus.execution import NetworkModel, NetworkView, NetworkController, CollectorProxy$/;"	i
@@ -152,6 +170,7 @@ NetworkView	icarus/models/tests/test_strategy.py	/^from icarus.execution import 
 NoCache	icarus/models/strategy.py	/^class NoCache(Strategy):$/;"	c
 NullCache	icarus/models/cache.py	/^class NullCache(Cache):$/;"	c
 Onur	examples/lanman/plotresults.py	/^import sys #Onur$/;"	i
+Onur	examples/sit-tnsm/plotresults.py	/^import sys #Onur$/;"	i
 Orchestrator	icarus/orchestration.py	/^class Orchestrator(object):$/;"	c
 Orchestrator	icarus/run.py	/^from icarus.orchestration import Orchestrator$/;"	i
 OverheadCollector	icarus/execution/collectors.py	/^class OverheadCollector(DataCollector):$/;"	c
@@ -160,6 +179,7 @@ PARALLEL_EXECUTION	examples/lanman/config.py	/^PARALLEL_EXECUTION = True$/;"	v
 PARALLEL_EXECUTION	examples/lira/config.py	/^PARALLEL_EXECUTION = True$/;"	v
 PARALLEL_EXECUTION	examples/offpath-vs-onpath-caching/config.py	/^PARALLEL_EXECUTION = True$/;"	v
 PARALLEL_EXECUTION	examples/single-experiment-line-topology/config.py	/^PARALLEL_EXECUTION = False$/;"	v
+PARALLEL_EXECUTION	examples/sit-tnsm/config.py	/^PARALLEL_EXECUTION = True$/;"	v
 PARALLEL_EXECUTION	lira/config.py	/^PARALLEL_EXECUTION = True$/;"	v
 PLOT_EMPTY_GRAPHS	examples/offpath-vs-onpath-caching/plotresults.py	/^PLOT_EMPTY_GRAPHS = True$/;"	v
 PLOT_EMPTY_GRAPHS	icarus/results/plot.py	/^PLOT_EMPTY_GRAPHS = False$/;"	v
@@ -169,6 +189,7 @@ REQ_RATE	config.py	/^REQ_RATE = 12$/;"	v
 REQ_RATE	examples/lanman/config.py	/^REQ_RATE = 1000$/;"	v
 REQ_RATE	examples/lira/config.py	/^REQ_RATE = 10$/;"	v
 REQ_RATE	examples/lira/config.py	/^REQ_RATE = 12$/;"	v
+REQ_RATE	examples/sit-tnsm/config.py	/^REQ_RATE = 100$/;"	v
 REQ_RATE	lira/config.py	/^REQ_RATE = 10$/;"	v
 REQ_RATE	lira/config.py	/^REQ_RATE = 12$/;"	v
 RESULTS_FORMAT	config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
@@ -176,14 +197,17 @@ RESULTS_FORMAT	examples/lanman/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
 RESULTS_FORMAT	examples/lira/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
 RESULTS_FORMAT	examples/offpath-vs-onpath-caching/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
 RESULTS_FORMAT	examples/single-experiment-line-topology/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
+RESULTS_FORMAT	examples/sit-tnsm/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
 RESULTS_FORMAT	lira/config.py	/^RESULTS_FORMAT = 'PICKLE'$/;"	v
 RESULTS_READER	examples/lanman/plotresults.py	/^from icarus.registry import RESULTS_READER$/;"	i
 RESULTS_READER	examples/lira/plotresults.py	/^from icarus.registry import RESULTS_READER$/;"	i
 RESULTS_READER	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.registry import RESULTS_READER$/;"	i
+RESULTS_READER	examples/sit-tnsm/plotresults.py	/^from icarus.registry import RESULTS_READER$/;"	i
 RESULTS_READER	icarus/registry.py	/^RESULTS_READER = {}$/;"	v
 RESULTS_READER	lira/plotresults.py	/^from icarus.registry import RESULTS_READER$/;"	i
 RESULTS_WRITER	icarus/registry.py	/^RESULTS_WRITER = {}$/;"	v
 RESULTS_WRITER	icarus/run.py	/^from icarus.registry import RESULTS_WRITER$/;"	i
+RSN_CACHE_RATIO	examples/sit-tnsm/config.py	/^RSN_CACHE_RATIO = 64$/;"	v
 RSN_PLACEMENT	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
 RSN_PLACEMENT	icarus/registry.py	/^RSN_PLACEMENT = {}$/;"	v
 RandEvictionCache	icarus/models/cache.py	/^class RandEvictionCache(Cache):$/;"	c
@@ -194,6 +218,7 @@ ResultSet	icarus/results/readwrite.py	/^class ResultSet(object):$/;"	c
 ResultSet	icarus/results/tests/test_resultset.py	/^from icarus.results import ResultSet$/;"	i
 RsnEntry	icarus/models/strategy.py	/^class RsnEntry(object):$/;"	c
 RsnNexthop	icarus/models/strategy.py	/^class RsnNexthop(object):$/;"	c
+SCOPE_LIMIT	examples/sit-tnsm/config.py	/^SCOPE_LIMIT = 2$/;"	v
 STRATEGIES	config.py	/^STRATEGIES = [$/;"	v
 STRATEGIES	examples/offpath-vs-onpath-caching/config.py	/^STRATEGIES = [$/;"	v
 STRATEGY	icarus/execution/engine.py	/^from icarus.registry import DATA_COLLECTOR, STRATEGY$/;"	i
@@ -203,19 +228,26 @@ STRATEGY_BAR_COLOR	examples/offpath-vs-onpath-caching/plotresults.py	/^STRATEGY_
 STRATEGY_BAR_HATCH	examples/offpath-vs-onpath-caching/plotresults.py	/^STRATEGY_BAR_HATCH = {$/;"	v
 STRATEGY_LEGEND	examples/lanman/plotresults.py	/^STRATEGY_LEGEND = {$/;"	v
 STRATEGY_LEGEND	examples/offpath-vs-onpath-caching/plotresults.py	/^STRATEGY_LEGEND = {$/;"	v
+STRATEGY_LEGEND	examples/sit-tnsm/plotresults.py	/^STRATEGY_LEGEND = {$/;"	v
 STRATEGY_STYLE	examples/lanman/plotresults.py	/^STRATEGY_STYLE = {$/;"	v
 STRATEGY_STYLE	examples/offpath-vs-onpath-caching/plotresults.py	/^STRATEGY_STYLE = {$/;"	v
+STRATEGY_STYLE	examples/sit-tnsm/plotresults.py	/^STRATEGY_STYLE = {$/;"	v
 SatisfactionRateCollector	icarus/execution/collectors.py	/^class SatisfactionRateCollector(DataCollector):$/;"	c
+Scoped_flooding	icarus/models/strategy.py	/^class Scoped_flooding(Strategy):$/;"	c
 SegmentedLruCache	icarus/models/cache.py	/^class SegmentedLruCache(Cache):$/;"	c
 SequenceNumber	icarus/orchestration.py	/^from icarus.util import SequenceNumber, timestr$/;"	i
 SequenceNumber	icarus/util.py	/^class SequenceNumber(object):$/;"	c
 Settings	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.util import Settings, Tree, config_logging, step_cdf$/;"	i
 Settings	icarus/run.py	/^from icarus.util import Settings, config_logging$/;"	i
 Settings	icarus/util.py	/^class Settings(object):$/;"	c
+Sit_only	icarus/models/strategy.py	/^class Sit_only(Strategy):$/;"	c
+Sit_with_scoped_flooding	icarus/models/strategy.py	/^class Sit_with_scoped_flooding(Strategy):$/;"	c
+StationarySitWorkload	icarus/scenarios/workload.py	/^class StationarySitWorkload(object):$/;"	c
 StationaryWorkload	icarus/scenarios/workload.py	/^class StationaryWorkload(object):$/;"	c
 Strategy	icarus/models/strategy.py	/^class Strategy(object):$/;"	c
 TOPOLOGIES	config.py	/^TOPOLOGIES =  [$/;"	v
 TOPOLOGIES	examples/offpath-vs-onpath-caching/config.py	/^TOPOLOGIES =  [$/;"	v
+TOPOLOGY	examples/sit-tnsm/config.py	/^TOPOLOGY = 3257$/;"	v
 TOPOLOGY_FACTORY	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
 TOPOLOGY_FACTORY	icarus/registry.py	/^TOPOLOGY_FACTORY = {}$/;"	v
 TOPOLOGY_RESOURCES_DIR	icarus/scenarios/topology.py	/^TOPOLOGY_RESOURCES_DIR = path.abspath(path.join(path.dirname(__file__), $/;"	v
@@ -256,6 +288,7 @@ Tree	examples/lira/config.py	/^from icarus.util import Tree$/;"	i
 Tree	examples/offpath-vs-onpath-caching/config.py	/^from icarus.util import Tree$/;"	i
 Tree	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.util import Settings, Tree, config_logging, step_cdf$/;"	i
 Tree	examples/single-experiment-line-topology/config.py	/^from icarus.util import Tree$/;"	i
+Tree	examples/sit-tnsm/config.py	/^from icarus.util import Tree$/;"	i
 Tree	icarus/execution/collectors.py	/^from icarus.util import Tree, inheritdoc$/;"	i
 Tree	icarus/results/plot.py	/^from icarus.util import Tree, step_cdf$/;"	i
 Tree	icarus/results/readwrite.py	/^from icarus.util import Tree$/;"	i
@@ -268,6 +301,7 @@ TruncatedZipfDist	icarus/tools/stats.py	/^class TruncatedZipfDist(DiscreteDist):
 TruncatedZipfDist	icarus/tools/tests/test_traces.py	/^from icarus.tools import TruncatedZipfDist$/;"	i
 TruncatedZipfDist	icarus/tools/traces.py	/^from icarus.tools import TruncatedZipfDist$/;"	i
 WARMUP_STRATEGY	examples/lanman/config.py	/^WARMUP_STRATEGY = 'NDN'$/;"	v
+WARMUP_STRATEGY	examples/sit-tnsm/config.py	/^WARMUP_STRATEGY = 'NDN'$/;"	v
 WORKLOAD	icarus/orchestration.py	/^                            WORKLOAD, DATA_COLLECTOR, STRATEGY$/;"	i
 WORKLOAD	icarus/registry.py	/^WORKLOAD = {}$/;"	v
 _Node	icarus/models/cache.py	/^    class _Node(object):$/;"	c	class:LinkedSet
@@ -303,6 +337,7 @@ __getitem__	icarus/results/readwrite.py	/^    def __getitem__(self, i):$/;"	m	cl
 __getitem__	icarus/util.py	/^    def __getitem__(self, name):$/;"	m	class:Settings	file:
 __hash__	icarus/models/strategy.py	/^    def __hash__():$/;"	m	class:RsnEntry	file:
 __hash__	icarus/models/strategy.py	/^    def __hash__():$/;"	m	class:RsnNexthop	file:
+__init__	icarus/execution/collectors.py	/^    def __init__(self, view):$/;"	m	class:AbsorptionCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view):$/;"	m	class:OverheadCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view):$/;"	m	class:SatisfactionRateCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view):$/;"	m	class:TestCollector
@@ -310,9 +345,9 @@ __init__	icarus/execution/collectors.py	/^    def __init__(self, view, **params)
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view, cdf=False):$/;"	m	class:LatencyCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view, cdf=False):$/;"	m	class:PathStretchCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view, collectors):$/;"	m	class:CollectorProxy
-__init__	icarus/execution/collectors.py	/^    def __init__(self, view, off_path_hits=True, per_node=False, content_hits=False):$/;"	m	class:CacheHitRatioCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view, sr=10):$/;"	m	class:LinkLoadCollector
 __init__	icarus/execution/collectors.py	/^    def __init__(self, view, t_poll=1000, cdf=True):$/;"	m	class:ControlPlaneCollector
+__init__	icarus/execution/collectors.py	/^    def __init__(self, view, user_hits = True, off_path_hits=False, per_node=False, content_hits=False):$/;"	m	class:CacheHitRatioCollector
 __init__	icarus/execution/network.py	/^    def __init__(self, model):$/;"	m	class:NetworkController
 __init__	icarus/execution/network.py	/^    def __init__(self, model):$/;"	m	class:NetworkView
 __init__	icarus/execution/network.py	/^    def __init__(self, topology, cache_policy, shortest_path=None):$/;"	m	class:NetworkModel
@@ -347,14 +382,19 @@ __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0): # Onur default value of metacaching set to LCE$/;"	m	class:NearestReplicaRoutingProb
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0):$/;"	m	class:LiraBC
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0):$/;"	m	class:Ndn
+__init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0):$/;"	m	class:Ndn_sit
+__init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, fan_out=1000):$/;"	m	class:Sit_only
+__init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, fan_out=1000, scope = 0):$/;"	m	class:Sit_with_scoped_flooding
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, rsn_fresh=0.0, rsn_timeout=360.0, extra_quota=3, fan_out=2):$/;"	m	class:LiraDfib
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, rsn_fresh=0.0, rsn_timeout=360.0, extra_quota=3, fan_out=2):$/;"	m	class:LiraDfibOph
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, rsn_fresh=0.0, rsn_timeout=360.0, extra_quota=3, fan_out=2, onpath_hint=False):$/;"	m	class:LiraBcHybrid
+__init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, p=1.0, scope = 0):$/;"	m	class:Scoped_flooding
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, t_tw=10):$/;"	m	class:ProbCache
 __init__	icarus/models/strategy.py	/^    def __init__(self, view, controller, use_ego_betw=False, **kwargs):$/;"	m	class:CacheLessForMore
 __init__	icarus/orchestration.py	/^    def __init__(self, settings, summary_freq=4):$/;"	m	class:Orchestrator
 __init__	icarus/results/readwrite.py	/^    def __init__(self, attr=None):$/;"	m	class:ResultSet
 __init__	icarus/scenarios/workload.py	/^    def __init__(self, topology, content_file, request_file, beta=0, **kwargs):$/;"	m	class:GlobetraffWorkload
+__init__	icarus/scenarios/workload.py	/^    def __init__(self, topology, n_contents, alpha, beta=0, rate=12.0,$/;"	m	class:StationarySitWorkload
 __init__	icarus/scenarios/workload.py	/^    def __init__(self, topology, n_contents, alpha, beta=0, rate=12.0,$/;"	m	class:StationaryWorkload
 __init__	icarus/scenarios/workload.py	/^    def __init__(self, topology, reqs_file, contents_file, n_contents,$/;"	m	class:TraceDrivenWorkload
 __init__	icarus/tools/stats.py	/^    def __init__(self, alpha=1.0, n=1000, seed=None):$/;"	m	class:TruncatedZipfDist
@@ -365,6 +405,7 @@ __init__	icarus/util.py	/^    def __init__(self, initval=1):$/;"	m	class:Sequenc
 __iter__	icarus/models/cache.py	/^    def __iter__(self):$/;"	m	class:LinkedSet	file:
 __iter__	icarus/results/readwrite.py	/^    def __iter__(self):$/;"	m	class:ResultSet	file:
 __iter__	icarus/scenarios/workload.py	/^    def __iter__(self):$/;"	m	class:GlobetraffWorkload	file:
+__iter__	icarus/scenarios/workload.py	/^    def __iter__(self):$/;"	m	class:StationarySitWorkload	file:
 __iter__	icarus/scenarios/workload.py	/^    def __iter__(self):$/;"	m	class:StationaryWorkload	file:
 __iter__	icarus/scenarios/workload.py	/^    def __iter__(self):$/;"	m	class:TraceDrivenWorkload	file:
 __iter__	icarus/util.py	/^    def __iter__(self, root=[]):$/;"	m	class:Tree	file:
@@ -407,6 +448,7 @@ apply_content_placement	icarus/scenarios/contentplacement.py	/^def apply_content
 argparse	examples/lanman/plotresults.py	/^import argparse$/;"	i
 argparse	examples/lira/plotresults.py	/^import argparse$/;"	i
 argparse	examples/offpath-vs-onpath-caching/plotresults.py	/^import argparse$/;"	i
+argparse	examples/sit-tnsm/plotresults.py	/^import argparse$/;"	i
 argparse	icarus.py	/^import argparse$/;"	i
 argparse	lira/plotresults.py	/^import argparse$/;"	i
 assign	icarus/util.py	/^    def assign(self):$/;"	m	class:SequenceNumber
@@ -419,6 +461,8 @@ base	examples/lanman/config.py	/^base = Tree()$/;"	v
 base	examples/lanman/config.py	/^base = copy.deepcopy(default)$/;"	v
 base	examples/lira/config.py	/^base = Tree()$/;"	v
 base	examples/lira/config.py	/^base = copy.deepcopy(default)$/;"	v
+base	examples/sit-tnsm/config.py	/^base = Tree()$/;"	v
+base	examples/sit-tnsm/config.py	/^base = copy.deepcopy(default)$/;"	v
 base	lira/config.py	/^base = Tree()$/;"	v
 base	lira/config.py	/^base = copy.deepcopy(default)$/;"	v
 betweenness_centrality_cache_placement	icarus/scenarios/cacheplacement.py	/^def betweenness_centrality_cache_placement(topology, cache_budget, **kwargs):$/;"	f
@@ -426,6 +470,7 @@ bottom	icarus/models/cache.py	/^    def bottom(self):$/;"	m	class:LinkedSet
 cache	icarus/models/tests/test_cache.py	/^import icarus.models as cache$/;"	i
 cache	icarus/tools/tests/test_cacheperf.py	/^import icarus.models as cache$/;"	i
 cache_all_rsn_all_placement	icarus/scenarios/rsnplacement.py	/^def cache_all_rsn_all_placement(topology, cache_budget, rsn_budget, **kwargs):$/;"	f
+cache_all_rsn_all_sit_placement	icarus/scenarios/rsnplacement.py	/^def cache_all_rsn_all_sit_placement(topology, cache_budget, rsn_budget, n_contents=10000, **kwargs):$/;"	f
 cache_all_rsn_high_placement	icarus/scenarios/rsnplacement.py	/^def cache_all_rsn_high_placement(topology, cache_budget, rsn_budget,$/;"	f
 cache_all_rsn_low_placement	icarus/scenarios/rsnplacement.py	/^def cache_all_rsn_low_placement(topology, cache_budget, rsn_budget,$/;"	f
 cache_dump	icarus/execution/network.py	/^    def cache_dump(self, node):$/;"	m	class:NetworkView
@@ -436,6 +481,7 @@ cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	
 cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:CollectorProxy
 cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:DataCollector
 cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:LatencyCollector
+cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:OverheadCollector
 cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:SatisfactionRateCollector
 cache_hit	icarus/execution/collectors.py	/^    def cache_hit(self, node):$/;"	m	class:TestCollector
 cache_lookup	icarus/execution/network.py	/^    def cache_lookup(self, node, content):$/;"	m	class:NetworkView
@@ -500,6 +546,7 @@ copy	examples/lanman/config.py	/^import copy$/;"	i
 copy	examples/lira/config.py	/^import copy$/;"	i
 copy	examples/offpath-vs-onpath-caching/config.py	/^import copy$/;"	i
 copy	examples/single-experiment-line-topology/config.py	/^import copy$/;"	i
+copy	examples/sit-tnsm/config.py	/^import copy$/;"	i
 copy	icarus/models/cache.py	/^import copy$/;"	i
 copy	icarus/orchestration.py	/^import copy$/;"	i
 copy	icarus/results/readwrite.py	/^import copy$/;"	i
@@ -511,6 +558,7 @@ cpu_count	examples/lanman/config.py	/^from multiprocessing import cpu_count$/;"	
 cpu_count	examples/lira/config.py	/^from multiprocessing import cpu_count$/;"	i
 cpu_count	examples/offpath-vs-onpath-caching/config.py	/^from multiprocessing import cpu_count$/;"	i
 cpu_count	examples/single-experiment-line-topology/config.py	/^from multiprocessing import cpu_count$/;"	i
+cpu_count	examples/sit-tnsm/config.py	/^from multiprocessing import cpu_count$/;"	i
 cpu_count	lira/config.py	/^from multiprocessing import cpu_count$/;"	i
 csv	icarus/scenarios/workload.py	/^import csv$/;"	i
 cubrt	icarus/tools/cacheperf.py	/^    def cubrt(x):$/;"	f	function:laoutaris_characteristic_time
@@ -521,6 +569,7 @@ default	config.py	/^default = Tree()$/;"	v
 default	examples/lanman/config.py	/^default = Tree()$/;"	v
 default	examples/lira/config.py	/^default = Tree()$/;"	v
 default	examples/offpath-vs-onpath-caching/config.py	/^default = Tree()$/;"	v
+default	examples/sit-tnsm/config.py	/^default = Tree()$/;"	v
 default	lira/config.py	/^default = Tree()$/;"	v
 degree_centrality_cache_placement	icarus/scenarios/cacheplacement.py	/^def degree_centrality_cache_placement(topology, cache_budget, **kwargs):$/;"	f
 delete_nexthop	icarus/models/strategy.py	/^    def delete_nexthop(self, nh):$/;"	m	class:RsnEntry
@@ -529,13 +578,19 @@ deque	examples/lanman/config.py	/^from collections import deque$/;"	i
 deque	examples/lira/config.py	/^from collections import deque$/;"	i
 deque	examples/offpath-vs-onpath-caching/config.py	/^from collections import deque$/;"	i
 deque	examples/single-experiment-line-topology/config.py	/^from collections import deque$/;"	i
+deque	examples/sit-tnsm/config.py	/^from collections import deque$/;"	i
 deque	icarus/models/cache.py	/^from collections import deque$/;"	i
 deque	lira/config.py	/^from collections import deque$/;"	i
 detach_collector	icarus/execution/network.py	/^    def detach_collector(self):$/;"	m	class:NetworkController
+disconnect_content	icarus/models/strategy.py	/^    def disconnect_content(self, receiver, connections):$/;"	m	class:Ndn_sit
+disconnect_content	icarus/models/strategy.py	/^    def disconnect_content(self, receiver, connections):$/;"	m	class:Scoped_flooding
+disconnect_content	icarus/models/strategy.py	/^    def disconnect_content(self, receiver, connections):$/;"	m	class:Sit_only
+disconnect_content	icarus/models/strategy.py	/^    def disconnect_content(self, receiver, connections):$/;"	m	class:Sit_with_scoped_flooding
 division	examples/lanman/plotresults.py	/^from __future__ import division$/;"	i
 division	examples/lira/multicast.py	/^from __future__ import division$/;"	i
 division	examples/lira/plotresults.py	/^from __future__ import division$/;"	i
 division	examples/offpath-vs-onpath-caching/plotresults.py	/^from __future__ import division$/;"	i
+division	examples/sit-tnsm/plotresults.py	/^from __future__ import division$/;"	i
 division	icarus/execution/collectors.py	/^from __future__ import division$/;"	i
 division	icarus/models/strategy.py	/^from __future__ import division$/;"	i
 division	icarus/models/tests/test_cache.py	/^from __future__ import division$/;"	i
@@ -568,9 +623,13 @@ empty	icarus/util.py	/^    def empty(self):$/;"	m	class:Tree
 end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:CollectorProxy
 end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:DataCollector
 end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:LatencyCollector
+end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:OverheadCollector
 end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:PathStretchCollector
 end_session	icarus/execution/collectors.py	/^    def end_session(self, success=True):$/;"	m	class:TestCollector
 end_session	icarus/execution/network.py	/^    def end_session(self, success=True):$/;"	m	class:NetworkController
+evict_item	icarus/execution/collectors.py	/^    def evict_item(self, item):$/;"	m	class:AbsorptionCollector
+evict_item	icarus/execution/collectors.py	/^    def evict_item(self, item):$/;"	m	class:CollectorProxy
+evict_item	icarus/execution/collectors.py	/^    def evict_item(self, item):$/;"	m	class:DataCollector
 exclude_patterns	doc/source/conf.py	/^exclude_patterns = []$/;"	v
 exec_experiment	icarus/execution/engine.py	/^def exec_experiment(topology, workload, netconf, strategy, cache_policy, collectors, warmup_strategy):$/;"	f
 exec_experiment	icarus/orchestration.py	/^from icarus.execution import exec_experiment$/;"	i
@@ -580,6 +639,9 @@ experiment	examples/lira/config.py	/^                experiment = copy.deepcopy(
 experiment	examples/lira/config.py	/^            experiment = copy.deepcopy(base)$/;"	v
 experiment	examples/offpath-vs-onpath-caching/config.py	/^                experiment = copy.deepcopy(default)$/;"	v
 experiment	examples/single-experiment-line-topology/config.py	/^experiment = Tree()$/;"	v
+experiment	examples/sit-tnsm/config.py	/^                experiment = copy.deepcopy(base)$/;"	v
+experiment	examples/sit-tnsm/config.py	/^            experiment = copy.deepcopy(base)$/;"	v
+experiment	examples/sit-tnsm/config.py	/^        experiment = copy.deepcopy(base)$/;"	v
 experiment	lira/config.py	/^                experiment = copy.deepcopy(base)$/;"	v
 experiment	lira/config.py	/^            experiment = copy.deepcopy(base)$/;"	v
 experiment_callback	icarus/orchestration.py	/^    def experiment_callback(self, args):$/;"	m	class:Orchestrator
@@ -596,6 +658,8 @@ fnss	lira/multicast.py	/^import fnss$/;"	i
 follow_offpath_trail	icarus/models/strategy.py	/^    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, fresh_trail, on_path_trail, off_path_trails, source, time):$/;"	m	class:LiraBcHybrid
 follow_offpath_trail	icarus/models/strategy.py	/^    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, on_path_trail, off_path_trails, source, time):$/;"	m	class:LiraDfib
 follow_offpath_trail	icarus/models/strategy.py	/^    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, on_path_trail, off_path_trails, source, time):$/;"	m	class:LiraDfibOph
+follow_offpath_trail	icarus/models/strategy.py	/^    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, on_path_trail, off_path_trails, source, time):$/;"	m	class:Sit_only
+follow_offpath_trail	icarus/models/strategy.py	/^    def follow_offpath_trail(self, prev_hop, curr_hop, rsn_hop, on_path_trail, off_path_trails, source, time):$/;"	m	class:Sit_with_scoped_flooding
 forward_content_hop	icarus/execution/network.py	/^    def forward_content_hop(self, u, v, main_path=True):$/;"	m	class:NetworkController
 forward_content_path	icarus/execution/network.py	/^    def forward_content_path(self, u, v, path=None, main_path=True):$/;"	m	class:NetworkController
 forward_request_hop	icarus/execution/network.py	/^    def forward_request_hop(self, u, v, main_path=True):$/;"	m	class:NetworkController
@@ -630,6 +694,7 @@ get_rsn	icarus/execution/network.py	/^    def get_rsn(self, node, content=None):
 get_sources	icarus/scenarios/contentplacement.py	/^def get_sources(topology):$/;"	f
 get_timestamp	icarus/models/strategy.py	/^def get_timestamp(rsn_nexthop_obj):$/;"	f
 get_topk_freshest_except_node	icarus/models/strategy.py	/^    def get_topk_freshest_except_node(self, time, node, k):$/;"	m	class:RsnEntry
+get_topk_freshest_except_nodes	icarus/models/strategy.py	/^    def get_topk_freshest_except_nodes(self, time, nodes, k):$/;"	m	class:RsnEntry
 getcwd	test.py	/^from os import path, getcwd$/;"	i
 getval	icarus/util.py	/^    def getval(self, path):$/;"	m	class:Tree
 handler	icarus/run.py	/^def handler(settings, orch, output, signum=None, frame=None):$/;"	f
@@ -642,6 +707,7 @@ has	icarus/models/cache.py	/^    def has(self, k):$/;"	m	class:NullCache
 has	icarus/models/cache.py	/^    def has(self, k):$/;"	m	class:RandEvictionCache
 has	icarus/models/cache.py	/^    def has(self, k):$/;"	m	class:SegmentedLruCache
 has_cache	icarus/execution/network.py	/^    def has_cache(self, node):$/;"	m	class:NetworkView
+has_content	icarus/execution/network.py	/^    def has_content(self, node):$/;"	m	class:NetworkController
 has_rsn_table	icarus/execution/network.py	/^    def has_rsn_table(self, node):$/;"	m	class:NetworkView
 hash	icarus/models/strategy.py	/^    def hash(self, content):$/;"	m	class:Hashrouting
 html_show_sourcelink	doc/source/conf.py	/^html_show_sourcelink = False$/;"	v
@@ -704,12 +770,15 @@ logging	icarus/util.py	/^import logging$/;"	i
 lookup_rsn_at_node	icarus/models/strategy.py	/^    def lookup_rsn_at_node(self, v):$/;"	m	class:LiraBcHybrid
 lookup_rsn_at_node	icarus/models/strategy.py	/^    def lookup_rsn_at_node(self, v):$/;"	m	class:LiraDfib
 lookup_rsn_at_node	icarus/models/strategy.py	/^    def lookup_rsn_at_node(self, v):$/;"	m	class:LiraDfibOph
+lookup_rsn_at_node	icarus/models/strategy.py	/^    def lookup_rsn_at_node(self, v):$/;"	m	class:Sit_only
+lookup_rsn_at_node	icarus/models/strategy.py	/^    def lookup_rsn_at_node(self, v):$/;"	m	class:Sit_with_scoped_flooding
 lowest_degree_content_placement	icarus/scenarios/contentplacement.py	/^def lowest_degree_content_placement(topology, contents, seed=None):$/;"	f
 m	icarus/__init__.py	/^    m = "Python version 2.6 or later is required for Icarus (%d.%d detected)."$/;"	v
 main	examples/lanman/plotresults.py	/^def main():$/;"	f
 main	examples/lira/multicast.py	/^def main():$/;"	f
 main	examples/lira/plotresults.py	/^def main():$/;"	f
 main	examples/offpath-vs-onpath-caching/plotresults.py	/^def main():$/;"	f
+main	examples/sit-tnsm/plotresults.py	/^def main():$/;"	f
 main	icarus.py	/^def main():$/;"	f
 main	lira/multicast.py	/^def main():$/;"	f
 main	lira/plotresults.py	/^def main():$/;"	f
@@ -722,6 +791,7 @@ math	icarus/tools/traces.py	/^import math$/;"	i
 matplotlib	examples/lanman/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	examples/lira/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	examples/offpath-vs-onpath-caching/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
+matplotlib	examples/sit-tnsm/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	icarus/results/plot.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	icarus/results/visualize.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	lira/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
@@ -786,6 +856,7 @@ os	doc/source/conf.py	/^import sys, os$/;"	i
 os	examples/lanman/plotresults.py	/^import os$/;"	i
 os	examples/lira/plotresults.py	/^import os$/;"	i
 os	examples/offpath-vs-onpath-caching/plotresults.py	/^import os$/;"	i
+os	examples/sit-tnsm/plotresults.py	/^import os$/;"	i
 os	icarus/results/plot.py	/^import os$/;"	i
 os	icarus/results/visualize.py	/^import os$/;"	i
 os	icarus/run.py	/^import os$/;"	i
@@ -812,41 +883,55 @@ pickle	icarus/test/test_tree.py	/^    import pickle$/;"	i
 plot_bar_chart	examples/lanman/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_bar_chart	examples/lira/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_bar_chart	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.results import plot_lines, plot_bar_chart$/;"	i
+plot_bar_chart	examples/sit-tnsm/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_bar_chart	icarus/results/plot.py	/^def plot_bar_chart(resultset, desc, filename, plotdir):$/;"	f
 plot_bar_chart	lira/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_cache_hits_vs_alpha	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_cache_hits_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):$/;"	f
 plot_cache_hits_vs_cache_size	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_cache_hits_vs_cache_size(resultset, topology, alpha, cache_size_range, strategies, plotdir):$/;"	f
 plot_cache_hits_vs_topology	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_cache_hits_vs_topology(resultset, alpha, cache_size, topology_range, strategies, plotdir):$/;"	f
 plot_cachehitsVSextraquota	examples/lanman/plotresults.py	/^def plot_cachehitsVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
+plot_cachehitsVSextraquota	examples/sit-tnsm/plotresults.py	/^def plot_cachehitsVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
 plot_cachehitsVSfreshness	examples/lanman/plotresults.py	/^def plot_cachehitsVSfreshness(resultset, plotdir, topology, fresh_intervals):$/;"	f
+plot_cachehitsVSfreshness	examples/sit-tnsm/plotresults.py	/^def plot_cachehitsVSfreshness(resultset, plotdir, topology, fresh_intervals):$/;"	f
 plot_cachehitsVStimeout	examples/lanman/plotresults.py	/^def plot_cachehitsVStimeout(resultset, plotdir, topology, timeouts):$/;"	f
+plot_cachehitsVStimeout	examples/sit-tnsm/plotresults.py	/^def plot_cachehitsVStimeout(resultset, plotdir, topology, timeouts):$/;"	f
 plot_cdf	icarus/results/plot.py	/^def plot_cdf(resultset, desc, filename, plotdir):$/;"	f
 plot_deployment_strategies_cache_hits	examples/lanman/plotresults.py	/^def plot_deployment_strategies_cache_hits(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
 plot_deployment_strategies_cache_hits	examples/lira/plotresults.py	/^def plot_deployment_strategies_cache_hits(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
+plot_deployment_strategies_cache_hits	examples/sit-tnsm/plotresults.py	/^def plot_deployment_strategies_cache_hits(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
 plot_deployment_strategies_cache_hits	lira/plotresults.py	/^def plot_deployment_strategies_cache_hits(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
 plot_deployment_strategies_cache_hits_ccn_comparison	examples/lanman/plotresults.py	/^def plot_deployment_strategies_cache_hits_ccn_comparison(resultset, plotdir, topology, deployment):$/;"	f
 plot_deployment_strategies_cache_hits_ccn_comparison	examples/lira/plotresults.py	/^def plot_deployment_strategies_cache_hits_ccn_comparison(resultset, plotdir, topology, deployment):$/;"	f
+plot_deployment_strategies_cache_hits_ccn_comparison	examples/sit-tnsm/plotresults.py	/^def plot_deployment_strategies_cache_hits_ccn_comparison(resultset, plotdir, topology, deployment):$/;"	f
 plot_deployment_strategies_cache_hits_ccn_comparison	lira/plotresults.py	/^def plot_deployment_strategies_cache_hits_ccn_comparison(resultset, plotdir, topology, deployment):$/;"	f
 plot_deployment_strategies_rsn_freshness	examples/lanman/plotresults.py	/^def plot_deployment_strategies_rsn_freshness(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
 plot_deployment_strategies_rsn_freshness	examples/lira/plotresults.py	/^def plot_deployment_strategies_rsn_freshness(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
+plot_deployment_strategies_rsn_freshness	examples/sit-tnsm/plotresults.py	/^def plot_deployment_strategies_rsn_freshness(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
 plot_deployment_strategies_rsn_freshness	lira/plotresults.py	/^def plot_deployment_strategies_rsn_freshness(resultset, plotdir, topology, rsn_cache_ratio=1.0):$/;"	f
 plot_first_experiments	examples/lanman/plotresults.py	/^def plot_first_experiments(resultset, plotdir, topology, strategy, probabilities, extra_quota):$/;"	f
+plot_first_experiments	examples/sit-tnsm/plotresults.py	/^def plot_first_experiments(resultset, plotdir, topology, strategy, probabilities, extra_quota):$/;"	f
 plot_incremental_deployment_cache_hits	examples/lanman/plotresults.py	/^def plot_incremental_deployment_cache_hits(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_cache_hits	examples/lira/plotresults.py	/^def plot_incremental_deployment_cache_hits(resultset, plotdir, topology, strategy):$/;"	f
+plot_incremental_deployment_cache_hits	examples/sit-tnsm/plotresults.py	/^def plot_incremental_deployment_cache_hits(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_cache_hits	lira/plotresults.py	/^def plot_incremental_deployment_cache_hits(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_cache_hits_off_path	examples/lanman/plotresults.py	/^def plot_incremental_deployment_cache_hits_off_path(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_cache_hits_off_path	examples/lira/plotresults.py	/^def plot_incremental_deployment_cache_hits_off_path(resultset, plotdir, topology, strategy):$/;"	f
+plot_incremental_deployment_cache_hits_off_path	examples/sit-tnsm/plotresults.py	/^def plot_incremental_deployment_cache_hits_off_path(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_cache_hits_off_path	lira/plotresults.py	/^def plot_incremental_deployment_cache_hits_off_path(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_freshness	examples/lanman/plotresults.py	/^def plot_incremental_deployment_freshness(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_freshness	examples/lira/plotresults.py	/^def plot_incremental_deployment_freshness(resultset, plotdir, topology, strategy):$/;"	f
+plot_incremental_deployment_freshness	examples/sit-tnsm/plotresults.py	/^def plot_incremental_deployment_freshness(resultset, plotdir, topology, strategy):$/;"	f
 plot_incremental_deployment_freshness	lira/plotresults.py	/^def plot_incremental_deployment_freshness(resultset, plotdir, topology, strategy):$/;"	f
 plot_latency	examples/lanman/plotresults.py	/^def plot_latency(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
+plot_latency	examples/sit-tnsm/plotresults.py	/^def plot_latency(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
 plot_latencyVSfreshness	examples/lanman/plotresults.py	/^def  plot_latencyVSfreshness(resultset, plotdir, topology, fresh_intervals):$/;"	f
+plot_latencyVSfreshness	examples/sit-tnsm/plotresults.py	/^def  plot_latencyVSfreshness(resultset, plotdir, topology, fresh_intervals):$/;"	f
 plot_latency_vs_alpha	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_latency_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):$/;"	f
 plot_latency_vs_cache_size	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_latency_vs_cache_size(resultset, topology, alpha, cache_size_range, strategies, plotdir):$/;"	f
 plot_lines	examples/lanman/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_lines	examples/lira/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_lines	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.results import plot_lines, plot_bar_chart$/;"	i
+plot_lines	examples/sit-tnsm/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_lines	icarus/results/plot.py	/^def plot_lines(resultset, desc, filename, plotdir):$/;"	f
 plot_lines	lira/plotresults.py	/^from icarus.results.plot import plot_bar_chart, plot_lines$/;"	i
 plot_link_load_vs_alpha	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_link_load_vs_alpha(resultset, topology, cache_size, alpha_range, strategies, plotdir):$/;"	f
@@ -854,21 +939,30 @@ plot_link_load_vs_cache_size	examples/offpath-vs-onpath-caching/plotresults.py	/
 plot_link_load_vs_topology	examples/offpath-vs-onpath-caching/plotresults.py	/^def plot_link_load_vs_topology(resultset, alpha, cache_size, topology_range, strategies, plotdir):$/;"	f
 plot_multicast	examples/lanman/plotresults.py	/^def plot_multicast(resultset, plotdir):$/;"	f
 plot_multicast	examples/lira/plotresults.py	/^def plot_multicast(resultset, plotdir):$/;"	f
+plot_multicast	examples/sit-tnsm/plotresults.py	/^def plot_multicast(resultset, plotdir):$/;"	f
 plot_multicast	lira/plotresults.py	/^def plot_multicast(resultset, plotdir):$/;"	f
 plot_overhead	examples/lanman/plotresults.py	/^def plot_overhead(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
+plot_overhead	examples/sit-tnsm/plotresults.py	/^def plot_overhead(resultset, plotdir, topology, rsn_cache_ratio):$/;"	f
 plot_overheadVSextraquota	examples/lanman/plotresults.py	/^def plot_overheadVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
+plot_overheadVSextraquota	examples/sit-tnsm/plotresults.py	/^def plot_overheadVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
 plot_paper_graphs	examples/lanman/plotresults.py	/^def plot_paper_graphs(resultset, plotdir):$/;"	f
 plot_paper_graphs	examples/lira/plotresults.py	/^def plot_paper_graphs(resultset, plotdir):$/;"	f
+plot_paper_graphs	examples/sit-tnsm/plotresults.py	/^def plot_paper_graphs(resultset, plotdir):$/;"	f
 plot_paper_graphs	lira/plotresults.py	/^def plot_paper_graphs(resultset, plotdir):$/;"	f
 plot_rsn_sizing_cachehits	examples/lanman/plotresults.py	/^def plot_rsn_sizing_cachehits(resultset, plotdir, topology, strategies, rsn_cache_ratios):$/;"	f
+plot_rsn_sizing_cachehits	examples/sit-tnsm/plotresults.py	/^def plot_rsn_sizing_cachehits(resultset, plotdir, topology, strategies, rsn_cache_ratios):$/;"	f
 plot_rsn_sizing_graphs	examples/lira/plotresults.py	/^def plot_rsn_sizing_graphs(resultset, plotdir, topology, strategy, deployment):$/;"	f
 plot_rsn_sizing_graphs	lira/plotresults.py	/^def plot_rsn_sizing_graphs(resultset, plotdir, topology, strategy, deployment):$/;"	f
 plot_satrateVSextraquota	examples/lanman/plotresults.py	/^def plot_satrateVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
+plot_satrateVSextraquota	examples/sit-tnsm/plotresults.py	/^def plot_satrateVSextraquota(resultset, plotdir, topology, caching_probabilities, quota):$/;"	f
 plot_satrateVSfreshness	examples/lanman/plotresults.py	/^def plot_satrateVSfreshness(resultset, plotdir, topology, fresh_intervals, quota):$/;"	f
+plot_satrateVSfreshness	examples/sit-tnsm/plotresults.py	/^def plot_satrateVSfreshness(resultset, plotdir, topology, fresh_intervals, quota):$/;"	f
 plot_third_experiments	examples/lanman/plotresults.py	/^def plot_third_experiments(resultset, plotdir):$/;"	f
+plot_third_experiments	examples/sit-tnsm/plotresults.py	/^def plot_third_experiments(resultset, plotdir):$/;"	f
 plt	examples/lanman/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	examples/lira/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	examples/offpath-vs-onpath-caching/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
+plt	examples/sit-tnsm/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	icarus/results/plot.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	icarus/results/visualize.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	lira/plotresults.py	/^import matplotlib.pyplot as plt$/;"	i
@@ -879,14 +973,22 @@ position	icarus/models/cache.py	/^    def position(self, k):$/;"	m	class:LruCach
 position	icarus/models/cache.py	/^    def position(self, k):$/;"	m	class:SegmentedLruCache
 pprint	icarus/util.py	/^    def pprint(self):$/;"	m	class:Tree
 printTree	examples/lanman/plotresults.py	/^def printTree(tree, d = 0):$/;"	f
+printTree	examples/sit-tnsm/plotresults.py	/^def printTree(tree, d = 0):$/;"	f
 print_cachehit_experiments_gnuplot	examples/lanman/plotresults.py	/^def print_cachehit_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
 print_first_experiment_data	examples/lanman/plotresults.py	/^def print_first_experiment_data(lst):$/;"	f
+print_first_experiment_data_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_first_experiment_data_gnuplot(lst):$/;"	f
 print_fourth_experiment_data	examples/lanman/plotresults.py	/^def print_fourth_experiment_data(lst):$/;"	f
+print_fourth_experiment_data	examples/sit-tnsm/plotresults.py	/^def print_fourth_experiment_data(lst):$/;"	f
 print_latency_experiments_gnuplot	examples/lanman/plotresults.py	/^def print_latency_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
+print_latency_experiments_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_latency_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
 print_overhead_experiments_gnuplot	examples/lanman/plotresults.py	/^def print_overhead_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
+print_overhead_experiments_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_overhead_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
 print_satrate_experiments_gnuplot	examples/lanman/plotresults.py	/^def print_satrate_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
+print_satrate_experiments_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_satrate_experiments_gnuplot(lst, strategies, probabilities, extra_quotas):$/;"	f
 print_second_experiment_data	examples/lanman/plotresults.py	/^def print_second_experiment_data(lst):$/;"	f
+print_second_experiment_data_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_second_experiment_data_gnuplot(lst):$/;"	f
 print_strategies_experiments_gnuplot	examples/lanman/plotresults.py	/^def print_strategies_experiments_gnuplot(lst):$/;"	f
+print_strategies_experiments_gnuplot	examples/sit-tnsm/plotresults.py	/^def print_strategies_experiments_gnuplot(lst):$/;"	f
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:CacheLessForMore
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:Edge
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:HashroutingAsymmetric
@@ -911,6 +1013,10 @@ process_event	icarus/models/strategy.py	/^    def process_event(self, time, rece
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:RandomBernoulli
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:RandomChoice
 process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log):$/;"	m	class:Strategy
+process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log, connections=None):$/;"	m	class:Ndn_sit
+process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log, connections=None):$/;"	m	class:Scoped_flooding
+process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log, connections=None):$/;"	m	class:Sit_only
+process_event	icarus/models/strategy.py	/^    def process_event(self, time, receiver, content, log, connections=None):$/;"	m	class:Sit_with_scoped_flooding
 project	doc/source/conf.py	/^project = u'Icarus'$/;"	v
 proportions_confidence_interval	icarus/tools/stats.py	/^def proportions_confidence_interval(data, confidence):$/;"	f
 purge	icarus/models/cache.py	/^    def purge():$/;"	f	function:ttl_cache
@@ -925,6 +1031,9 @@ put	icarus/models/cache.py	/^    def put(self, k):$/;"	m	class:NullCache
 put	icarus/models/cache.py	/^    def put(self, k):$/;"	m	class:RandEvictionCache
 put	icarus/models/cache.py	/^    def put(self, k):$/;"	m	class:SegmentedLruCache
 put_content	icarus/execution/network.py	/^    def put_content(self, node):$/;"	m	class:NetworkController
+put_item	icarus/execution/collectors.py	/^    def put_item(self, item):$/;"	m	class:AbsorptionCollector
+put_item	icarus/execution/collectors.py	/^    def put_item(self, item):$/;"	m	class:CollectorProxy
+put_item	icarus/execution/collectors.py	/^    def put_item(self, item):$/;"	m	class:DataCollector
 put_rsn	icarus/execution/network.py	/^    def put_rsn(self, node, next_hop, content=None):$/;"	m	class:NetworkController
 pygments_style	doc/source/conf.py	/^pygments_style = 'sphinx'$/;"	v
 rand_insert_cache	icarus/models/cache.py	/^def rand_insert_cache(cache, p, seed=None):$/;"	f
@@ -974,20 +1083,22 @@ remove	icarus/models/cache.py	/^    def remove(self, k):$/;"	m	class:NullCache
 remove	icarus/models/cache.py	/^    def remove(self, k):$/;"	m	class:RandEvictionCache
 remove	icarus/models/cache.py	/^    def remove(self, k):$/;"	m	class:SegmentedLruCache
 remove_content	icarus/execution/network.py	/^    def remove_content(self, node):$/;"	m	class:NetworkController
+remove_content_at_node	icarus/execution/network.py	/^    def remove_content_at_node(self, content, node):$/;"	m	class:NetworkController
 remove_link	icarus/execution/network.py	/^    def remove_link(self, u, v):$/;"	m	class:NetworkController
 remove_node	icarus/execution/network.py	/^    def remove_node(self, v):$/;"	m	class:NetworkController
 remove_rsn	icarus/execution/network.py	/^    def remove_rsn(self, node, content=None):$/;"	m	class:NetworkController
 renormalize_rsn_freshness	examples/lanman/plotresults.py	/^def renormalize_rsn_freshness(resultset):$/;"	f
 renormalize_rsn_freshness	examples/lira/plotresults.py	/^def renormalize_rsn_freshness(resultset):$/;"	f
+renormalize_rsn_freshness	examples/sit-tnsm/plotresults.py	/^def renormalize_rsn_freshness(resultset):$/;"	f
 renormalize_rsn_freshness	lira/plotresults.py	/^def renormalize_rsn_freshness(resultset):$/;"	f
 request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:CollectorProxy
 request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:DataCollector
-request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:LatencyCollector
 request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:LinkLoadCollector
 request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:PathStretchCollector
 request_hop	icarus/execution/collectors.py	/^    def request_hop(self, u, v, main_path=True):$/;"	m	class:TestCollector
 restore_link	icarus/execution/network.py	/^    def restore_link(self, u, v):$/;"	m	class:NetworkController
 restore_node	icarus/execution/network.py	/^    def restore_node(self, v):$/;"	m	class:NetworkController
+results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:AbsorptionCollector
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:CacheHitRatioCollector
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:CollectorProxy
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:ControlPlaneCollector
@@ -997,6 +1108,8 @@ results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:Link
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:OverheadCollector
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:PathStretchCollector
 results	icarus/execution/collectors.py	/^    def results(self):$/;"	m	class:SatisfactionRateCollector
+return_content	icarus/models/strategy.py	/^    def return_content(self, off_path_trails, receiver, time):$/;"	m	class:Scoped_flooding
+return_content	icarus/models/strategy.py	/^    def return_content(self, off_path_trails, receiver, time):$/;"	m	class:Sit_with_scoped_flooding
 rsn_dump	icarus/execution/network.py	/^    def rsn_dump(self, node):$/;"	m	class:NetworkView
 rsn_lookup	icarus/execution/network.py	/^    def rsn_lookup(self, node, content):$/;"	m	class:NetworkView
 rsn_nodes	icarus/execution/network.py	/^    def rsn_nodes(self, size=False):$/;"	m	class:NetworkView
@@ -1006,6 +1119,7 @@ rsnplacement	icarus/scenarios/test/test_rsnplacement.py	/^import icarus.scenario
 run	examples/lanman/plotresults.py	/^def run(resultsfile, plotdir):$/;"	f
 run	examples/lira/plotresults.py	/^def run(resultsfile, plotdir):$/;"	f
 run	examples/offpath-vs-onpath-caching/plotresults.py	/^def run(config, results, plotdir):$/;"	f
+run	examples/sit-tnsm/plotresults.py	/^def run(resultsfile, plotdir):$/;"	f
 run	icarus.py	/^    from icarus.run import run$/;"	i
 run	icarus/orchestration.py	/^    def run(self):$/;"	m	class:Orchestrator
 run	icarus/run.py	/^def run(config_file, output, config_override):$/;"	f
@@ -1017,7 +1131,9 @@ s	icarus/__init__.py	/^    exec('import %s' % m)$/;"	i
 scipy	icarus/tools/stats.py	/^import scipy.stats as ss$/;"	i
 scipy	icarus/tools/traces.py	/^        raise ImportError("Cannot import scipy.optimize minimize_scalar. "$/;"	i
 searchDict	examples/lanman/plotresults.py	/^def searchDict(lst, category, attr_value_pairs, num_pairs, collector, subtype):$/;"	f
+searchDict	examples/sit-tnsm/plotresults.py	/^def searchDict(lst, category, attr_value_pairs, num_pairs, collector, subtype):$/;"	f
 searchDictMultipleCat	examples/lanman/plotresults.py	/^def searchDictMultipleCat(lst, category_list, attr_value_pairs, num_pairs, collector, subtype):$/;"	f
+searchDictMultipleCat	examples/sit-tnsm/plotresults.py	/^def searchDictMultipleCat(lst, category_list, attr_value_pairs, num_pairs, collector, subtype):$/;"	f
 server_hit	icarus/execution/collectors.py	/^    def server_hit(self, node):$/;"	m	class:CacheHitRatioCollector
 server_hit	icarus/execution/collectors.py	/^    def server_hit(self, node):$/;"	m	class:CollectorProxy
 server_hit	icarus/execution/collectors.py	/^    def server_hit(self, node):$/;"	m	class:DataCollector
@@ -1058,17 +1174,18 @@ source_suffix	doc/source/conf.py	/^source_suffix = '.rst'$/;"	v
 sources	icarus/scenarios/topology.py	/^    def sources(self):$/;"	m	class:IcnTopology
 ss	icarus/tools/stats.py	/^import scipy.stats as ss$/;"	i
 stack_map	icarus/results/visualize.py	/^def stack_map(topology):$/;"	f
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:CacheHitRatioCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:CollectorProxy
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:ControlPlaneCollector
 start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:DataCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:LatencyCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:LinkLoadCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:OverheadCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:PathStretchCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:SatisfactionRateCollector
-start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content):$/;"	m	class:TestCollector
-start_session	icarus/execution/network.py	/^    def start_session(self, timestamp, receiver, content, log):$/;"	m	class:NetworkController
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:AbsorptionCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:CacheHitRatioCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:CollectorProxy
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:ControlPlaneCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:LatencyCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:LinkLoadCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:OverheadCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:PathStretchCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:SatisfactionRateCollector
+start_session	icarus/execution/collectors.py	/^    def start_session(self, timestamp, receiver, content, counts=None):$/;"	m	class:TestCollector
+start_session	icarus/execution/network.py	/^    def start_session(self, timestamp, receiver, content, log, counts=None):$/;"	m	class:NetworkController
 stats	icarus/tools/tests/test_cacheperf.py	/^import icarus.tools.stats as stats$/;"	i
 stats	icarus/tools/tests/test_stats.py	/^import icarus.tools as stats$/;"	i
 step_cdf	examples/offpath-vs-onpath-caching/plotresults.py	/^from icarus.util import Settings, Tree, config_logging, step_cdf$/;"	i
@@ -1079,6 +1196,7 @@ strategy	icarus/models/tests/test_strategy.py	/^import icarus.models as strategy
 symmetrify_paths	icarus/execution/network.py	/^def symmetrify_paths(shortest_paths):$/;"	f
 sys	doc/source/conf.py	/^import sys, os$/;"	i
 sys	examples/lanman/plotresults.py	/^import sys #Onur$/;"	i
+sys	examples/sit-tnsm/plotresults.py	/^import sys #Onur$/;"	i
 sys	icarus.py	/^import sys$/;"	i
 sys	icarus/__init__.py	/^import sys$/;"	i
 sys	icarus/models/tests/test_cache.py	/^import sys$/;"	i
@@ -1271,6 +1389,8 @@ uniform_consolidated_cache_placement	icarus/scenarios/cacheplacement.py	/^def un
 uniform_consolidated_cache_placement	icarus/scenarios/rsnplacement.py	/^from cacheplacement import uniform_consolidated_cache_placement$/;"	i
 uniform_consolidated_rsn_placement	icarus/scenarios/rsnplacement.py	/^def uniform_consolidated_rsn_placement(topology, rsn_budget, spread=0.5,$/;"	f
 uniform_content_placement	icarus/scenarios/contentplacement.py	/^def uniform_content_placement(topology, contents, seed=None):$/;"	f
+uniform_sit_cache_placement	icarus/scenarios/cacheplacement.py	/^def uniform_sit_cache_placement(topology, cache_budget, n_contents, **kwargs):$/;"	f
+uniform_sit_cache_placement	icarus/scenarios/rsnplacement.py	/^from cacheplacement import uniform_sit_cache_placement$/;"	i
 unittest	icarus/models/tests/test_cache.py	/^        import unittest2 as unittest$/;"	i
 unittest	icarus/models/tests/test_cache.py	/^    import unittest$/;"	i
 unittest	icarus/models/tests/test_strategy.py	/^        import unittest2 as unittest$/;"	i
