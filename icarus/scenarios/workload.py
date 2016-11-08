@@ -43,7 +43,10 @@ class StationarySitWorkload(object):
         self.contents = range(1, n_contents + 1)
         self.n_connected = 0
         num_receviers = len(topology.receivers())
+        # Variable to keep track of connections for each receiver:
         self.connections = [dict() for x in range(num_receviers)]
+        # Variable to keep track of the requested content during warmup (to print info)
+        self.requested_content = {}
         self.receivers_list = list(topology.receivers())
         self.alpha = alpha
         self.rate = rate
@@ -60,6 +63,7 @@ class StationarySitWorkload(object):
     def __iter__(self):
         req_counter = 0
         t_event = 0.0
+        # Initialization (i.e., warmup) period:
         while req_counter < self.n_warmup:
             t_event += (random.expovariate(self.rate))
             if self.beta == 0:
@@ -68,6 +72,7 @@ class StationarySitWorkload(object):
                 receiver = self.receivers[self.receiver_dist.rv()-1]
         
             content = int(self.zipf.rv())
+            self.requested_content[content] = True
             log = (req_counter >= self.n_warmup)
             event = {'receiver': receiver, 'content': content, 'log': log}
             yield (t_event, event)
@@ -83,6 +88,8 @@ class StationarySitWorkload(object):
                 receiver_conns[content] = 1
 
         t_disconnect = t_event
+        print "The number of content requested during warmup is " + repr(len(self.requested_content.keys())) + " for zipf parameter: " + repr(self.alpha)
+
         while req_counter < self.n_warmup + self.n_measured:
             t_event += (random.expovariate(self.rate))
             

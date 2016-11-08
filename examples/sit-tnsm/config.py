@@ -17,7 +17,7 @@ PARALLEL_EXECUTION = True
 
 # Number of processes used to run simulations in parallel.
 # This option is ignored if PARALLEL_EXECUTION = False
-N_PROCESSES = cpu_count()/4
+N_PROCESSES = cpu_count()
 
 # Granularity of caching.
 # Currently, only OBJECT is supported
@@ -40,7 +40,7 @@ DATA_COLLECTORS = ['ABS', 'CACHE_HIT_RATIO', 'OVERHEAD', 'LATENCY']
 WARMUP_STRATEGY = 'NDN'
 
 #Probability of caching
-CACHING_PROBABILITY = 0.1
+CACHING_PROBABILITY = 0.5
 
 # This is a base experiment configuration with all the parameters that won't
 # change across experiments of the same campaign
@@ -58,10 +58,10 @@ BETA = 0.9
 N_CONTENTS = 10**4
 # Number of content requests generated to prepopulate the caches
 # These requests are not logged
-N_WARMUP = 60*60*10 # 60 minutes
+N_WARMUP = 20*60*100 # 60 minutes
 # Number of content requests generated after the warmup and logged
 # to generate results. 
-N_MEASURED = 3*60*60*10 # three hours
+N_MEASURED = 1*60*60*100 # three hours
 # Number of requests per second (over the whole network)
 REQ_RATE = 100
 
@@ -204,28 +204,8 @@ for strategy in ['SCOPED_FLOODING']:
 2. The impact of the cache capacity of each router in the performance of the examined resilience strategies.
 """
 
+
 #"""
-
-for strategy in ['NDN_SIT']:
-    for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
-        experiment = copy.deepcopy(base)
-        experiment['workload'] = {
-            'name':      'STATIONARY_SIT',
-            'alpha':      ALPHA,
-            'n_contents': N_CONTENTS,
-            'n_warmup':   N_WARMUP,
-            'n_measured': N_MEASURED,
-            'rate':       REQ_RATE,
-            'disconnection_rate': DISCONNECTION_RATE
-        }
-        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-        experiment['strategy']['name'] = strategy
-        experiment['joint_cache_rsn_placement']['network_cache'] = network_cache
-        experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache  
-        experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
-        EXPERIMENT_QUEUE.append(experiment)
-
-# Second experiments
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
@@ -270,7 +250,6 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
                 experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache  
                 experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
                 EXPERIMENT_QUEUE.append(experiment)
-
 # Second experiments
 for strategy in ['SCOPED_FLOODING']:
     for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
@@ -294,30 +273,12 @@ for strategy in ['SCOPED_FLOODING']:
             EXPERIMENT_QUEUE.append(experiment)
 #"""
 
-
 """
 3. The impact of the disconnection rate of the users in the performance of the examined resilience strategies
 """
 
 """
-for strategy in ['NDN_SIT']:
-    for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
-        experiment = copy.deepcopy(base)
-        experiment['workload'] = {
-            'name':      'STATIONARY_SIT',
-            'alpha':      ALPHA,
-            'n_contents': N_CONTENTS,
-            'n_warmup':   N_WARMUP,
-            'n_measured': N_MEASURED,
-            'rate':       REQ_RATE,
-            'disconnection_rate': disconnection_rate
-        }
-        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-        experiment['strategy']['name'] = strategy
-        experiment['desc'] = "strategy: %s disconnection rate: %s" % (str(strategy), str(disconnection_rate))
-        EXPERIMENT_QUEUE.append(experiment)
 
-# Third Experiments
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
@@ -387,29 +348,10 @@ for strategy in ['SCOPED_FLOODING']:
 """
 
 """
-# Fourth Experiments
-for strategy in ['NDN_SIT']:
-    for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
-        experiment = copy.deepcopy(base)
-        experiment['workload'] = {
-            'name':      'STATIONARY_SIT',
-            'alpha':      alpha,
-            'n_contents': N_CONTENTS,
-            'n_warmup':   N_WARMUP,
-            'n_measured': N_MEASURED,
-            'rate':       REQ_RATE,
-            'disconnection_rate': DISCONNECTION_RATE
-        }
-        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
-        experiment['strategy']['name'] = strategy
-        experiment['joint_cache_rsn_placement']['rsn_cache_ratio'] = RSN_CACHE_RATIO
-        experiment['desc'] = "strategy: %s alpha: %s" % (str(strategy), str(alpha))
-        EXPERIMENT_QUEUE.append(experiment)
 
-# Fourth Experiments
 for strategy in ['SIT_ONLY']:
-    for fan_out in [1, 100]: # ONE and ALL strategies
-        for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
+    for fan_out in [1]: # ONE and ALL strategies
+        for alpha in [0.00001, 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0, 2.25, 2.50]:
             experiment = copy.deepcopy(base)
             experiment['workload'] = {
                 'name':      'STATIONARY_SIT',
@@ -428,9 +370,9 @@ for strategy in ['SIT_ONLY']:
 
 # Fourth Experiments
 for strategy in ['SIT_WITH_SCOPED_FLOODING']:
-    for fan_out in [1, 100]: # ONE and ALL strategies
+    for fan_out in [1]: # ONE and ALL strategies
         for scope in [1, 2]:
-            for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
+            for alpha in [0.00001, 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0, 2.25, 2.50]:
                 experiment = copy.deepcopy(base)
                 experiment['workload'] = {
                     'name':      'STATIONARY_SIT',
@@ -451,7 +393,7 @@ for strategy in ['SIT_WITH_SCOPED_FLOODING']:
 # Fourth Experiments
 for strategy in ['SCOPED_FLOODING']:
     for scope in [1, 2, 100]:
-        for alpha in [0.00001, 0.5, 0.7, 1.0, 0.5, 1.0, 1.5, 2.0]:
+        for alpha in [0.00001, 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0, 2.25, 2.50]:
             experiment = copy.deepcopy(base)
             experiment['workload'] = {
                 'name':      'STATIONARY_SIT',

@@ -31,7 +31,6 @@ def uniform_sit_cache_placement(topology, cache_budget, n_contents, **kwargs):
     cache_size = iround(cache_budget / len(icr_candidates))
     for v in icr_candidates:
         topology.node[v]['stack'][1]['cache_size'] = cache_size
-    print 'HERE'
     for v in topology.receivers():
         topology.node[v]['stack'][1]['cache_size'] = n_contents
 

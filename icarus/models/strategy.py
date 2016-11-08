@@ -171,6 +171,17 @@ class RsnEntry(object):
         else:
             return None
 
+    def age_nexthop(self, nh):
+        """Increase the age of the nexthop to avoid reconsidering same nexthop when 
+        there is no invalidation.
+        Note: this is an alternative for invalidation
+        """
+        
+        nexthops = [x for x in self.nexthops if x.nexthop is nh]
+        for nexthop in nexthops:
+            nexthop.time_stamp -= 100
+            if nexthop.time_stamp < 0:
+                nexthop.time_stamp = 0
 
     def delete_nexthop(self, nh):
         """ Delete a nexthop from the entry
@@ -488,22 +499,41 @@ class Scoped_flooding(Strategy):
         self.receivers_list = list(self.topo.receivers())
         self.sources_list = list(self.topo.sources())
     
+    def weighted_choice(self, items, weights):
+
+        total = sum(weights)
+        chosen = random.uniform(0, total)
+        cumulative = 0
+        index=0
+        for item in items:
+            cumulative += weights[index]
+            index += 1
+            if cumulative > chosen:
+                return item
+
     def disconnect_content(self, receiver, connections):
+        """ 
+        Disconnect a user from the network: Simulated by keeping a track of the number
+        of users attached to each users, where each user corresponds to a content item.
+
+        NOTE: If a user connects but fails to retrieve the item, the item will not be in 
+        the cache. In that case, we still disconnect the user without evicting the item
+        from the cache.
+        """
         receiver_index = self.receivers_list.index(receiver)
         receiver_conns = connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
         ret = None
         if len(positives) > 0:
-            key = random.choice(positives)
+            key = weighted_choice(positives, weights)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0:
+            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
                 ret = self.controller.remove_content_at_node(key, receiver)
-                if ret is None:
+                if not ret:
                     raise ValueError('this should not happen in disconnect')
-                    
             return key
         else:
             return None
@@ -521,11 +551,11 @@ class Scoped_flooding(Strategy):
                     v = path[hop]
                     self.controller.forward_request_hop(u, v)
             path.reverse()
+            if path[0] in self.sources_list:
+                print "Error: path includes the source!\n"
             for hop in range(1, len(path)):
                 curr_hop = path[hop]
                 prev_hop = path[hop-1]
-                if visited.get(prev_hop):
-                    break
                 visited[prev_hop] = True
                 # Insert content to cache
                 if curr_hop is receiver and self.view.has_cache(curr_hop):
@@ -553,13 +583,6 @@ class Scoped_flooding(Strategy):
         # Source of content
         source = self.view.content_source(content)
 
-        if self.view.has_cache(receiver):
-            if self.controller.get_content(receiver):
-                self.controller.end_session()
-                return
-        else:
-            raise ValueError('receiver has no cache')
-        
         access_node = self.topo.neighbors(receiver)[0]
         self.controller.forward_request_hop(receiver, access_node)
         if self.view.has_cache(access_node):
@@ -568,6 +591,15 @@ class Scoped_flooding(Strategy):
                 self.controller.end_session()
                 return
         
+        # Perform the receiver cache search (i.e., user cache) after checking access router 
+        # because in reality the request travels to the access router before reaching the user
+        if self.view.has_cache(receiver):
+            if self.controller.get_content(receiver):
+                self.controller.end_session()
+                return
+        else:
+            raise ValueError('receiver has no cache')
+
         # Start performing scoped flooding (one level at a time) 
         nodes = [access_node]
         trails = [[receiver, access_node]]
@@ -611,7 +643,6 @@ class Scoped_flooding(Strategy):
 
         self.return_content(off_path_trails, receiver, time)
 
-
 @register_strategy('SIT_WITH_SCOPED_FLOODING')
 class Sit_with_scoped_flooding(Strategy):
     """Sit strategy with scoped flooding 
@@ -644,22 +675,42 @@ class Sit_with_scoped_flooding(Strategy):
         self.receivers_list = list(self.topo.receivers())
         self.sources_list = list(self.topo.sources())
     
+    def weighted_choice(self, items, weights):
+
+        total = sum(weights)
+        chosen = random.uniform(0, total)
+        cumulative = 0
+        index=0
+        for item in items:
+            cumulative += weights[index]
+            index += 1
+            if cumulative > chosen:
+                return item
+
     def disconnect_content(self, receiver, connections):
+        """ 
+        Disconnect a user from the network: Simulated by keeping a track of the number
+        of users attached to each users, where each user corresponds to a content item.
+
+        NOTE: If a user connects but fails to retrieve the item, the item will not be in 
+        the cache. In that case, we still disconnect the user without evicting the item
+        from the cache.
+        """
         receiver_index = self.receivers_list.index(receiver)
         receiver_conns = connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
+        weights = [receiver_conns[x] for x in positives]
         ret = None
         if len(positives) > 0:
-            key = random.choice(positives)
+            key = weighted_choice(positives, weights)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0:
+            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
                 ret = self.controller.remove_content_at_node(key, receiver)
-                if ret is None:
+                if not ret:
                     raise ValueError('this should not happen in disconnect')
-                    
             return key
         else:
             return None
@@ -702,7 +753,7 @@ class Sit_with_scoped_flooding(Strategy):
         # This point is reached when I did explore an RSN
         # trail but failed. 
         # Invalidate the trail here and return to on-path node
-            # self.controller.invalidate_trail(trail)
+            self.controller.invalidate_trail(trail)
             
             #TODO if, afer invalidation, there is no nexthop entries
             # then delete the rsn entry
@@ -728,11 +779,11 @@ class Sit_with_scoped_flooding(Strategy):
                     v = path[hop]
                     self.controller.forward_request_hop(u, v)
             path.reverse()
+            if path[0] in self.sources_list:
+                print "Error: path includes the source!\n"
             for hop in range(1, len(path)):
                 curr_hop = path[hop]
                 prev_hop = path[hop-1]
-                if visited.get(prev_hop):
-                    break
                 visited[prev_hop] = True
                 # Insert/Update the rsn entry towards the direction of cache if such an entry existed (in the case of off-path hit)
                 rsn_entry = self.controller.get_rsn(prev_hop) if self.view.has_rsn_table(prev_hop) else None
@@ -765,12 +816,6 @@ class Sit_with_scoped_flooding(Strategy):
         # Source of content
         source = self.view.content_source(content)
 
-        if self.view.has_cache(receiver):
-            if self.controller.get_content(receiver):
-                self.controller.end_session()
-                return
-        else:
-            raise ValueError('receiver has no cache')
         
         access_node = self.topo.neighbors(receiver)[0]
         self.controller.forward_request_hop(receiver, access_node)
@@ -779,6 +824,16 @@ class Sit_with_scoped_flooding(Strategy):
                 self.controller.forward_content_hop(access_node, receiver)
                 self.controller.end_session()
                 return
+
+        # Perform the receiver cache search (i.e., user cache) after checking access router 
+        # because in reality the request travels to the access router before reaching the user
+        if self.view.has_cache(receiver):
+            if self.controller.get_content(receiver):
+                self.controller.end_session()
+                return
+        else:
+            raise ValueError('receiver has no cache')
+
         # Perform SIT routing
         rsn_entry = self.lookup_rsn_at_node(access_node)
         rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, receiver, self.fan_out) if rsn_entry is not None else None
@@ -808,7 +863,7 @@ class Sit_with_scoped_flooding(Strategy):
                 neighbors = self.topo.neighbors(n)
                 neighbors = list(set(neighbors) - set(visited))
                 for neighbor in neighbors:
-                    if neighbor in visited or neighbor in self.receivers_list:
+                    if neighbor in visited or neighbor in self.sources_list:
                         continue
                     visited.add(neighbor)
                     new_trail = list(trail)
@@ -881,23 +936,44 @@ class Sit_only(Strategy):
         #num_receviers = len(self.topo.receivers())
         #self.connections = [dict() for x in range(num_receviers)]
         self.receivers_list = list(self.topo.receivers())
+        self.sources_list = list(self.topo.sources())
+    
+    def weighted_choice(self, items, weights):
+
+        total = sum(weights)
+        chosen = random.uniform(0, total)
+        cumulative = 0
+        index=0
+        for item in items:
+            cumulative += weights[index]
+            index += 1
+            if cumulative > chosen:
+                return item
+
     
     def disconnect_content(self, receiver, connections):
+        """ 
+        Disconnect a user from the network: Simulated by keeping a track of the number
+        of users attached to each users, where each user corresponds to a content item.
+
+        NOTE: If a user connects but fails to retrieve the item, the item will not be in 
+        the cache. In that case, we still disconnect the user without evicting the item
+        from the cache.
+        """
         receiver_index = self.receivers_list.index(receiver)
         receiver_conns = connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
         ret = None
         if len(positives) > 0:
-            key = random.choice(positives)
+            key = weighted_choice(positives)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0:
+            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
                 ret = self.controller.remove_content_at_node(key, receiver)
-                if ret is None:
+                if not ret:
                     raise ValueError('this should not happen in disconnect')
-                    
             return key
         else:
             return None
@@ -940,7 +1016,7 @@ class Sit_only(Strategy):
         # This point is reached when I did explore an RSN
         # trail but failed. 
         # Invalidate the trail here and return to on-path node
-            # self.controller.invalidate_trail(trail)
+            self.controller.invalidate_trail(trail)
             
             #TODO if, afer invalidation, there is no nexthop entries
             # then delete the rsn entry
@@ -967,13 +1043,6 @@ class Sit_only(Strategy):
         # Source of content
         source = self.view.content_source(content)
 
-        if self.view.has_cache(receiver):
-            if self.controller.get_content(receiver):
-                self.controller.end_session()
-                return
-        else:
-            raise ValueError('receiver has no cache')
-        
         access_node = self.topo.neighbors(receiver)[0]
         self.controller.forward_request_hop(receiver, access_node)
         if self.view.has_cache(access_node):
@@ -981,6 +1050,16 @@ class Sit_only(Strategy):
                 self.controller.forward_content_hop(access_node, receiver)
                 self.controller.end_session()
                 return
+        
+        # Perform the receiver cache search (i.e., user cache) after checking access router 
+        # because in reality the request travels to the access router before reaching the user
+        if self.view.has_cache(receiver):
+            if self.controller.get_content(receiver):
+                self.controller.end_session()
+                return
+        else:
+            raise ValueError('receiver has no cache')
+
         # Perform SIT routing
         rsn_entry = self.lookup_rsn_at_node(access_node)
         rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, receiver, self.fan_out) if rsn_entry is not None else None
@@ -1003,11 +1082,12 @@ class Sit_only(Strategy):
                     v = path[hop]
                     self.controller.forward_request_hop(u, v)
             path.reverse()
+            if path[0] in self.sources_list:
+                print "Error: path includes the source!\n"
+                
             for hop in range(1, len(path)):
                 curr_hop = path[hop]
                 prev_hop = path[hop-1]
-                if visited.get(prev_hop):
-                    break
                 visited[prev_hop] = True
                 # Insert/Update the rsn entry towards the direction of cache if such an entry existed (in the case of off-path hit)
                 rsn_entry = self.controller.get_rsn(prev_hop) if self.view.has_rsn_table(prev_hop) else None
@@ -1019,6 +1099,7 @@ class Sit_only(Strategy):
                     item = self.controller.put_content(curr_hop)
                     if item is not None:
                         raise ValueError('in sit only receiver cache should not evict!')
+                        print "Error: in sit only receiver cache should not evict!"
                 elif self.view.has_cache(curr_hop):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(curr_hop)
@@ -1782,6 +1863,14 @@ class Ndn_sit(Strategy):
         self.receivers_list = list(self.topo.receivers())
 
     def disconnect_content(self, receiver, connections):
+        """ 
+        Disconnect a user from the network: Simulated by keeping a track of the number
+        of users attached to each users, where each user corresponds to a content item.
+
+        NOTE: If a user connects but fails to retrieve the item, the item will not be in 
+        the cache. In that case, we still disconnect the user without evicting the item
+        from the cache.
+        """
         receiver_index = self.receivers_list.index(receiver)
         receiver_conns = connections[receiver_index]
         positives = [x for x in receiver_conns.keys() if receiver_conns[x] > 0]
@@ -1789,14 +1878,13 @@ class Ndn_sit(Strategy):
         if len(positives) > 0:
             key = random.choice(positives)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0:
+            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
                 ret = self.controller.remove_content_at_node(key, receiver)
-                if ret is None:
+                if not ret:
                     raise ValueError('this should not happen in disconnect')
-                    
             return key
         else:
             return None

@@ -60,11 +60,15 @@ def exec_experiment(topology, workload, netconf, strategy, cache_policy, collect
     warmup_strategy_inst = STRATEGY[warmup_strategy_name](view, controller, **warmup_strategy_args)
     
     counter = 0
+    once = False
     for time, event in workload:
         if counter < workload.n_warmup:
             counter += 1
             warmup_strategy_inst.process_event(time, **event)
         else:
+            if once is False:
+                print "Warmup is over at time: " + repr(time)
+                once = True
             strategy_inst.process_event(time, **event)
 
     return collector.results()

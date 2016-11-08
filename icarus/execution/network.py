@@ -539,12 +539,12 @@ class NetworkController(object):
         if node in self.model.cache:
             # if self.session['log']: ONUR: do not check this condition so that 
             # we can report put_item events to the collector during warmup phase
-            if not self.model.cache[node].has(self.session['content']):
+            if not self.model.cache[node].has(self.session['content']) and self.session['log']:
                 self.collector.put_item(self.session['content'])
 
             item = self.model.cache[node].put(self.session['content'])
 
-            if item is not None:
+            if item is not None and self.session['log']:
                 self.collector.evict_item(item)
 
         return item
@@ -628,10 +628,14 @@ class NetworkController(object):
             *True* if the entry was in the cache, *False* if it was not.
         """
 
-        if self.collector is not None:
+        item = self.model.cache[node].remove(content)
+
+        if self.collector is not None and self.session['log']:
             self.collector.evict_item(content)
+        else:
+            print "ERROR: in remove_content_at_node, this should not happen!"
             
-        return self.model.cache[node].remove(content)
+        return item
 
     def remove_content(self, node):
         """Remove the content being handled from the cache

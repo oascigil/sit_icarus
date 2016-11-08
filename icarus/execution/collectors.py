@@ -314,6 +314,10 @@ class AbsorptionCollector(DataCollector):
         self.num_absorbed = 0
         self.time = 0.0
         self.content_count = {}
+        self.absorbed_items = {}
+        self.all_items = {}
+        self.warmup_period = 1200 # XXX get these info from configuration
+        self.measurement_period = 3600
     
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
@@ -321,26 +325,54 @@ class AbsorptionCollector(DataCollector):
 
     @inheritdoc(DataCollector)
     def put_item(self, item):
+        self.all_items[item] = True
+
+    """
         if item not in self.content_count.keys():
             self.content_count[item] = 1
         else:
+            #if self.content_count[item] is 0:
+            #    print "ERROR: item already absorbed, item: " + repr(item) + "\n"
             self.content_count[item] += 1
-        
+    """    
     @inheritdoc(DataCollector)
     def evict_item(self, item):
+        self.all_items[item] = True
+        locs = self.view.content_locations(item)
+        if len(locs) is 1:
+            if item in self.absorbed_items.keys():
+                print "Error: item is already absorbed: " + repr(item)
+            else:
+                self.absorbed_items[item] = True
+                self.num_absorbed += 1
+                self.absorbtion_times += (self.time - self.warmup_period)
+    
+    """
         if item in self.content_count.keys():
             self.content_count[item] -= 1
             if self.content_count[item] is 0:
+                # print "Item absorbed, item: " + repr(item) + "\n"
                 self.absorbtion_times += self.time
                 self.num_absorbed += 1
+                locs = list(self.view.content_locations(item))
+                if len(locs) > 0:
+                    for loc in locs:
+                        if loc in self.view.topology().receivers():
+                            print "ERROR: item is not evicted from " + repr(len(locs)) + " caches yet!"
+                            print "Node " + repr(loc) + " is in receivers"
+                        elif loc not in self.view.topology().receivers() and loc not in self.view.topology().sources():
+                            print "Node " + repr(loc)
+    """            
          
     @inheritdoc(DataCollector)
     def results(self):
         # len(self.content_count.keys()) is the content population
         # time is the duration of the experiment
         results = Tree(**{'NUM_ABS': self.num_absorbed})
-        results['MEAN_ABS_TIME'] = self.time*(len(self.content_count.keys()) - self.num_absorbed) + self.absorbtion_times/len(self.content_count.keys())
-        print "The number of content keys is " + repr(len(self.content_count.keys())) + "\n"
+        num_unique_content = len(self.all_items.keys())
+        self.absorbtion_times += self.measurement_period * (num_unique_content - self.num_absorbed)
+        results['MEAN_ABS_TIME'] = self.absorbtion_times/num_unique_content
+        results['NUM_UNIQUE'] = num_unique_content
 
         return results
 
@@ -364,6 +396,7 @@ class SatisfactionRateCollector(DataCollector):
         self.server_hits = 0.0
         self.cache_hits = 0.0
         self.hit_indicator = False # a cache/server hit occured in a session to only count the first occurence
+        self.sources_set = view.topology().sources()
     
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
@@ -469,6 +502,7 @@ class LatencyCollector(DataCollector):
         self.view = view
         self.req_latency = 0.0
         self.sess_count = 0
+        self.satisfied_conn = 0 # sessions during which content is returned
         self.latency = 0.0
         self.server_latency = 100 # Additional max. latency (penalty) for retrieving content from server 
         self.hit_indicator = False
@@ -493,7 +527,9 @@ class LatencyCollector(DataCollector):
     
     @inheritdoc(DataCollector)
     def cache_hit(self, node):
-        self.hit_indicator = True
+        if not self.hit_indicator:
+            self.satisfied_conn += 1
+            self.hit_indicator = True
 
     @inheritdoc(DataCollector)
     def content_hop(self, u, v, main_path=True):
@@ -501,6 +537,9 @@ class LatencyCollector(DataCollector):
             self.sess_latency += 1
         if v is self.receiver:
             self.content_recvd = True
+        if not self.hit_indicator:
+            self.satisfied_conn += 1
+            self.hit_indicator = True
 
         #if not self.content_recvd:
         #    if u is self.source:
@@ -523,7 +562,7 @@ class LatencyCollector(DataCollector):
     
     @inheritdoc(DataCollector)
     def results(self):
-        results = Tree({'MEAN': self.latency/self.sess_count})
+        results = Tree({'MEAN': self.latency/self.satisfied_conn})
         if self.cdf:
             results['CDF'] = cdf(self.latency_data) 
         return results
@@ -550,6 +589,7 @@ class CacheHitRatioCollector(DataCollector):
             globally
         """
         self.view = view
+        self.sources_set = view.topology().sources()
         self.user_hits = user_hits
         self.off_path_hits = off_path_hits
         self.per_node = per_node
@@ -573,6 +613,7 @@ class CacheHitRatioCollector(DataCollector):
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
         self.hit_indicator = False 
+        self.content = content
         self.sess_count += 1
         if self.off_path_hits:
             source = self.view.content_source(content)
@@ -595,8 +636,12 @@ class CacheHitRatioCollector(DataCollector):
             if self.per_node:
                 self.per_node_cache_hits[node] += 1
 
+        if node in self.sources_set:
+            print "Error: fetching an item from a source in cache_hit"
+
     @inheritdoc(DataCollector)
     def server_hit(self, node):
+        print "Error: fetching an item from a source during observation. in server_hit"
         self.serv_hits += 1
         if self.cont_hits:
             self.cont_serv_hits[self.curr_cont] += 1
