@@ -206,6 +206,26 @@ for strategy in ['SCOPED_FLOODING']:
 
 
 #"""
+for strategy in ['NDN_SIT']:
+    for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
+        experiment = copy.deepcopy(base)
+        experiment['workload'] = {
+            'name':      'STATIONARY_SIT',
+            'alpha':      ALPHA,
+            'n_contents': N_CONTENTS,
+            'n_warmup':   N_WARMUP,
+            'n_measured': N_MEASURED,
+            'rate':       REQ_RATE,
+            'disconnection_rate': DISCONNECTION_RATE
+        }
+        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+        experiment['strategy']['name'] = strategy
+        experiment['strategy']['p'] = 1.0
+        experiment['joint_cache_rsn_placement']['network_cache'] = network_cache
+        experiment['joint_cache_rsn_placement']['network_rsn'] = RSN_CACHE_RATIO* network_cache  
+        experiment['desc'] = "strategy: %s network_cache: %s" % (str(strategy), str(network_cache))
+        EXPERIMENT_QUEUE.append(experiment)
+
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies
         for network_cache in [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5]:
@@ -278,6 +298,25 @@ for strategy in ['SCOPED_FLOODING']:
 """
 
 """
+
+for strategy in ['NDN_SIT']:
+    for disconnection_rate in [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05]:
+        experiment = copy.deepcopy(base)
+        experiment['workload'] = {
+            'name':      'STATIONARY_SIT',
+            'alpha':      ALPHA,
+            'n_contents': N_CONTENTS,
+            'n_warmup':   N_WARMUP,
+            'n_measured': N_MEASURED,
+            'rate':       REQ_RATE,
+            'disconnection_rate': disconnection_rate
+        }
+        experiment['joint_cache_rsn_placement']['name'] = 'CACHE_ALL_RSN_ALL_SIT'
+        experiment['strategy']['name'] = strategy
+        experiment['strategy']['p'] = 1.0
+        experiment['desc'] = "strategy: %s disconnection rate: %s fan_out: %s" % (str(strategy), str(disconnection_rate), str(fan_out))
+        EXPERIMENT_QUEUE.append(experiment)
+
 
 for strategy in ['SIT_ONLY']:
     for fan_out in [1, 100]: # ONE and ALL strategies

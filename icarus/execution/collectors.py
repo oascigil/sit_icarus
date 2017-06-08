@@ -316,7 +316,7 @@ class AbsorptionCollector(DataCollector):
         self.content_count = {}
         self.absorbed_items = {}
         self.all_items = {}
-        self.warmup_period = 1200 # XXX get these info from configuration
+        self.warmup_period = 3600 # XXX get these info from configuration
         self.measurement_period = 3600
     
     @inheritdoc(DataCollector)
@@ -346,7 +346,6 @@ class AbsorptionCollector(DataCollector):
                 self.absorbed_items[item] = True
                 self.num_absorbed += 1
                 self.absorbtion_times += (self.time - self.warmup_period)
-    
     """
         if item in self.content_count.keys():
             self.content_count[item] -= 1
@@ -442,10 +441,15 @@ class OverheadCollector(DataCollector):
         """
         self.view = view
         self.num_data = 0.0
+        self.num_interest = 0.0
         self.num_session_data = 0
         self.sess_count = 0
         self.satisfied_conn = 0 # sessions during which content is returned
         self.is_sat = False
+
+    @inheritdoc(DataCollector)
+    def request_hop(self, u, v, main_path=True):
+        self.num_interest += 1
 
     @inheritdoc(DataCollector)
     def content_hop(self, u, v, main_path=True):
@@ -463,7 +467,9 @@ class OverheadCollector(DataCollector):
 
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
-        self.sess_count += 1
+        if content is not -1: #ignore disconnect events
+            self.sess_count += 1
+        
         self.is_sat = False
         self.num_session_data = 0
     
@@ -475,8 +481,8 @@ class OverheadCollector(DataCollector):
 
     @inheritdoc(DataCollector)
     def results(self):
-        results = Tree({'MEAN': ((1.0*self.num_data)/self.satisfied_conn)})
-        
+        results = Tree({'MEAN': ((1.0*self.num_data)/self.satisfied_conn),
+                        'MEAN_INTEREST': self.num_interest/self.sess_count})
         return results
 
 @register_data_collector('LATENCY')
@@ -614,7 +620,8 @@ class CacheHitRatioCollector(DataCollector):
     def start_session(self, timestamp, receiver, content):
         self.hit_indicator = False 
         self.content = content
-        self.sess_count += 1
+        if content is not -1: #ignore disconnect events
+            self.sess_count += 1
         if self.off_path_hits:
             source = self.view.content_source(content)
             self.curr_path = self.view.shortest_path(receiver, source)
@@ -664,6 +671,7 @@ class CacheHitRatioCollector(DataCollector):
         if self.user_hits:
             results['MEAN_USER_HITS'] = (1.0*self.num_user_hits)/self.sess_count
             results['MEAN_NETWORK_HITS'] = (1.0*(self.cache_hits-self.num_user_hits))/self.sess_count
+            results['SESSION_COUNT'] = self.sess_count
         if self.per_node:
             for v in self.per_node_cache_hits:
                 self.per_node_cache_hits[v] /= n_sess

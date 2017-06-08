@@ -89,7 +89,7 @@ class StationarySitWorkload(object):
 
         t_disconnect = t_event
         print "The number of content requested during warmup is " + repr(len(self.requested_content.keys())) + " for zipf parameter: " + repr(self.alpha)
-
+        num_unsatisfied = 0
         while req_counter < self.n_warmup + self.n_measured:
             t_event += (random.expovariate(self.rate))
             
@@ -113,6 +113,8 @@ class StationarySitWorkload(object):
             log = (req_counter >= self.n_warmup)
             event = {'receiver': receiver, 'content': content, 'log': log, 'connections': self.connections}
             self.n_connected += 1
+            if content not in self.requested_content.keys():
+                num_unsatisfied += 1
             yield (t_event, event)
             # Keep track of connections
             receiver_index = self.receivers_list.index(receiver)
@@ -123,6 +125,7 @@ class StationarySitWorkload(object):
                 receiver_conns[content] = 1
             req_counter += 1
 
+        print "Number of unsatisfiable requests: " + str(num_unsatisfied)
         raise StopIteration()
 
 @register_workload('STATIONARY')
