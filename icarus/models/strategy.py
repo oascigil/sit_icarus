@@ -167,7 +167,7 @@ class RsnEntry(object):
         If there is no such RnsNexthop, then return None
         """
         for nh in self.nexthops:
-            if nh.nexthop is node:
+            if nh.nexthop == node:
                 return nh
         else:
             return None
@@ -178,7 +178,7 @@ class RsnEntry(object):
         Note: this is an alternative for invalidation
         """
         
-        nexthops = [x for x in self.nexthops if x.nexthop is nh]
+        nexthops = [x for x in self.nexthops if x.nexthop == nh]
         for nexthop in nexthops:
             nexthop.time_stamp -= 100
             if nexthop.time_stamp < 0:
@@ -191,7 +191,7 @@ class RsnEntry(object):
         ----------
         nh : node identifier; delete nexthop entry whose nexthop is nh
         """
-        self.nexthops = [x for x in self.nexthops if x.nexthop is not nh] 
+        self.nexthops = [x for x in self.nexthops if x.nexthop != nh] 
 
     def insert_nexthop(self, nexthop, dest, distance, time, is_used=False):
         """insert a nexthop entry along with distance and time of insertion attributes
@@ -240,7 +240,7 @@ class RsnEntry(object):
         
         # list comprehension is a nice tool!
         best_nexthops = [x for x in self.nexthops if x.is_used_and_fresh(time, self.fresh_interval)]
-        best_nexthops = [x for x in best_nexthops if x.nexthop is not node]
+        best_nexthops = [x for x in best_nexthops if x.nexthop != node]
         
         best_nexthops.sort(key=get_timestamp, reverse=True)
         if (len(best_nexthops) >= num_entries):
@@ -248,7 +248,7 @@ class RsnEntry(object):
         
         # Add freshest nexthops if there is still space 
         filtered_nexthops = [x for x in self.nexthops if not x.is_used_and_fresh(time, self.fresh_interval)]
-        filtered_nexthops = [x for x in filtered_nexthops if x.nexthop is not node]
+        filtered_nexthops = [x for x in filtered_nexthops if x.nexthop != node]
         
         filtered_nexthops.sort(key=get_timestamp, reverse=True)
         len_best_nexthops = len(best_nexthops)
@@ -291,10 +291,10 @@ class RsnEntry(object):
         self.nexthops = [x for x in self.nexthops if not x.is_expired(time, self.expiration_interval)]
         freshest = None
         for n in self.nexthops:
-            if freshest is None or (n.age(time) < freshest.age(time) and n.nexthop is not node):
+            if freshest is None or (n.age(time) < freshest.age(time) and n.nexthop != node):
                 freshest = n
 
-        if freshest is not None and freshest.nexthop is node:
+        if freshest is not None and freshest.nexthop == node:
             freshest = None
 
         return freshest
@@ -337,7 +337,7 @@ class RsnEntry(object):
         self.nexthops.sort(key=get_timestamp, reverse=True)
         
         filtered_nexthops = self.nexthops[:]
-        filtered_nexthops = [x for x in filtered_nexthops if x.nexthop is not node]
+        filtered_nexthops = [x for x in filtered_nexthops if x.nexthop != node]
         return filtered_nexthops[0:k]
 
         #nexthop_obj = self.nexthops[0] if len(self.nexthops) > 0 else None
@@ -529,7 +529,7 @@ class Scoped_flooding(Strategy):
         if len(positives) > 0:
             key = self.weighted_choice(positives, weights)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
+            if receiver_conns[key] == 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
@@ -561,7 +561,7 @@ class Scoped_flooding(Strategy):
                 prev_hop = path[hop-1]
                 visited[prev_hop] = True
                 # Insert content to cache
-                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                if curr_hop == receiver and self.view.has_cache(curr_hop):
                     item = self.controller.put_content(curr_hop)
                     if item is not None:
                         raise ValueError('in scoped flooding receiver cache should not evict!')
@@ -643,15 +643,15 @@ class Scoped_flooding(Strategy):
                 new_trails.remove(trail)
 
             trails = new_trails
-            if len(trails) is 0:
+            if len(trails) == 0:
                 break
         # end of for eachScope in range(1, scope+1):
-        if self.scope is 100:
-            if len(self.view.content_locations(content)) > 1 and len(off_path_trails) is 0:
+        if self.scope == 100:
+            if len(self.view.content_locations(content)) > 1 and len(off_path_trails) == 0:
                 print "This should not happen for src: " + str(receiver)
                 for loc in self.view.content_locations(content):
                     print "\t" + str(loc)
-            elif len(self.view.content_locations(content)) is 1 and len(off_path_trails) > 0:
+            elif len(self.view.content_locations(content)) == 1 and len(off_path_trails) > 0:
                 print "This should not happen for src: " + str(receiver)
 
         self.return_content(off_path_trails, receiver, time)
@@ -717,7 +717,7 @@ class Sit_with_scoped_flooding(Strategy):
         if len(positives) > 0:
             key = self.weighted_choice(positives, weights)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
+            if receiver_conns[key] == 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
@@ -805,7 +805,7 @@ class Sit_with_scoped_flooding(Strategy):
                 rsn_entry.insert_nexthop(curr_hop, curr_hop, len(path) - hop, time)
                 self.controller.put_rsn(prev_hop, rsn_entry)
                 # Insert content to cache
-                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                if curr_hop == receiver and self.view.has_cache(curr_hop):
                     item = self.controller.put_content(curr_hop)
                     if item is not None:
                         raise ValueError('in sit with scoped flooding receiver cache should not evict!')
@@ -985,7 +985,7 @@ class Sit_only(Strategy):
         if len(positives) > 0:
             key = self.weighted_choice(positives, weights)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
+            if receiver_conns[key] == 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
@@ -1115,7 +1115,7 @@ class Sit_only(Strategy):
                 rsn_entry.insert_nexthop(curr_hop, curr_hop, len(path) - hop, time)
                 self.controller.put_rsn(prev_hop, rsn_entry)
                 # Insert content to cache
-                if curr_hop is receiver and self.view.has_cache(curr_hop):
+                if curr_hop == receiver and self.view.has_cache(curr_hop):
                     item = self.controller.put_content(curr_hop)
                     if item is not None:
                         raise ValueError('in sit only receiver cache should not evict!')
@@ -1717,7 +1717,7 @@ class NearestReplicaRoutingProb(Strategy):
         self.controller.get_content(nearest_replica)
         # Now we need to return packet and we have options
         path = list(reversed(self.view.shortest_path(receiver, nearest_replica)))
-        if source is nearest_replica:
+        if source == nearest_replica:
             for u, v in path_links(path):
                 self.controller.forward_content_hop(u, v)
                 if self.view.has_cache(v) and (self.p == 1.0 or random.random() <= self.p):
@@ -1898,7 +1898,7 @@ class Ndn_sit(Strategy):
         if len(positives) > 0:
             key = random.choice(positives)
             receiver_conns[key] -= 1
-            if receiver_conns[key] is 0 and self.view.cache_lookup(receiver, key):
+            if receiver_conns[key] == 0 and self.view.cache_lookup(receiver, key):
             # Remove the content from the cache
                 if not self.view.has_cache(receiver):
                     raise ValueError('receiver has no Cache!')
@@ -1938,11 +1938,11 @@ class Ndn_sit(Strategy):
             u = path[hop]
             v = path[hop+1]
             # Return if there is cache hit at v
-            if u is not receiver and self.view.has_cache(u):
+            if u != receiver and self.view.has_cache(u):
                 if self.controller.get_content(u):
                     serving_node = u
                     break
-            if v is not source:
+            if v != source:
                 self.controller.forward_request_hop(u, v)
         else: # for concluded without break. Content is not found on-path, return requestback as a NACK (i.e., negative response)
             path.reverse()
@@ -1957,7 +1957,7 @@ class Ndn_sit(Strategy):
             for hop in range(1, len(path)):
                 u = path[hop - 1]
                 v = path[hop]
-                if v is not receiver and self.view.has_cache(v):
+                if v != receiver and self.view.has_cache(v):
                     if self.p == 1.0 or random.random() <= self.p:
                         self.controller.put_content(v)
                 # Insert/update rsn entry
@@ -2122,7 +2122,7 @@ class Ndn(Strategy):
         for hop in range(1, len(path)):
             u = path[hop - 1]
             v = path[hop]
-            if v is receiver and self.view.has_cache(v):
+            if v == receiver and self.view.has_cache(v):
                 item = self.controller.put_content(v)
                 if item is not None:
                     raise ValueError('in ndn: receiver cache should not evict!')
@@ -2286,11 +2286,11 @@ class LiraBcHybrid(Strategy):
                     on_path_serving_node = v
                     break
             packet_quota += 1
-            if packet_quota >= quota_limit and v is not source:
+            if packet_quota >= quota_limit and v != source:
                 # we spent the quota without either reaching the source or finding a cached copy
                 break
             rsn_entry = self.lookup_rsn_at_node(v)
-            if packet_quota <= quota_limit and rsn_entry is not None and v is not source:
+            if packet_quota <= quota_limit and rsn_entry is not None and v != source:
                 off_path_serving_node = None
                 off_path_fresh_trail = False
                 next_hop = path[hop + 1]
@@ -2344,7 +2344,7 @@ class LiraBcHybrid(Strategy):
                     v = path[hop]
                     self.controller.forward_request_hop(u, v)
             path.reverse()
-            if path[0] is source:
+            if path[0] == source:
                 content_placed = False
                 for hop in range(1, len(path)):
                     curr_hop = path[hop]
@@ -2518,11 +2518,11 @@ class LiraDfibOph(Strategy):
                     on_path_serving_node = v
                     break
             packet_quota += 1
-            if packet_quota >= quota_limit and v is not source:
+            if packet_quota >= quota_limit and v != source:
                 # we spent the quota without either reaching the source or finding a cached copy
                 break
             rsn_entry = self.lookup_rsn_at_node(v)
-            if packet_quota <= quota_limit and rsn_entry is not None and v is not source:
+            if packet_quota <= quota_limit and rsn_entry is not None and v != source:
                 off_path_serving_node = None
                 next_hop = path[hop + 1]
                 rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, u, self.fan_out)
@@ -2563,7 +2563,7 @@ class LiraDfibOph(Strategy):
                     v = path[hop]
                     self.controller.forward_request_hop(u, v)
             path.reverse()
-            if path[0] is source:
+            if path[0] == source:
             # Content coming from the server (i.e., source)
                 content_placed = False
                 for hop in range(1, len(path)):
@@ -2763,11 +2763,11 @@ class LiraDfib(Strategy):
                     on_path_serving_node = v
                     break
             packet_quota += 1
-            if packet_quota >= quota_limit and v is not source:
+            if packet_quota >= quota_limit and v != source:
                 # we spent the quota without either reaching the source or finding a cached copy
                 break
             rsn_entry = self.lookup_rsn_at_node(v)
-            if packet_quota <= quota_limit and rsn_entry is not None and v is not source:
+            if packet_quota <= quota_limit and rsn_entry is not None and v != source:
                 off_path_serving_node = None
                 next_hop = path[hop + 1]
                 rsn_nexthop_objs = rsn_entry.get_topk_freshest_except_node(time, u, self.fan_out)
@@ -2909,7 +2909,7 @@ class LiraBC(Strategy):
                     on_path_serving_node = v
                     break
             rsn_entry = self.controller.get_rsn(v) if self.view.has_rsn_table(v) else None
-            if rsn_entry is not None and v is not source:
+            if rsn_entry is not None and v != source:
                 next_hop = path[hop + 1]
                 rsn_nexthop_obj = rsn_entry.get_freshest_except_nodes(time, [u, next_hop])
                 rsn_hop = rsn_nexthop_obj.nexthop if rsn_nexthop_obj is not None else None

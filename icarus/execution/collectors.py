@@ -339,7 +339,7 @@ class AbsorptionCollector(DataCollector):
     def evict_item(self, item):
         self.all_items[item] = True
         locs = self.view.content_locations(item)
-        if len(locs) is 1:
+        if len(locs) == 1:
             if item in self.absorbed_items.keys():
                 print "Error: item is already absorbed: " + repr(item)
             else:
@@ -467,7 +467,7 @@ class OverheadCollector(DataCollector):
 
     @inheritdoc(DataCollector)
     def start_session(self, timestamp, receiver, content):
-        if content is not -1: #ignore disconnect events
+        if content != -1: #ignore disconnect events
             self.sess_count += 1
         
         self.is_sat = False
@@ -475,7 +475,7 @@ class OverheadCollector(DataCollector):
     
     @inheritdoc(DataCollector)
     def end_session(self, success=True):
-        if self.is_sat is True and self.num_session_data is 0:
+        if self.is_sat is True and self.num_session_data == 0:
         # if there is cache hit without data forwarding, add 2 hops to count for receiver-to-receiver communication
             self.num_data += 2
 
@@ -541,7 +541,7 @@ class LatencyCollector(DataCollector):
     def content_hop(self, u, v, main_path=True):
         if not self.content_recvd:
             self.sess_latency += 1
-        if v is self.receiver:
+        if v == self.receiver:
             self.content_recvd = True
         if not self.hit_indicator:
             self.satisfied_conn += 1
@@ -620,7 +620,7 @@ class CacheHitRatioCollector(DataCollector):
     def start_session(self, timestamp, receiver, content):
         self.hit_indicator = False 
         self.content = content
-        if content is not -1: #ignore disconnect events
+        if content != -1: #ignore disconnect events
             self.sess_count += 1
         if self.off_path_hits:
             source = self.view.content_source(content)

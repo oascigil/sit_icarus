@@ -373,7 +373,7 @@ class NetworkModel(object):
                     receiver_cache_size = stack_props['cache_size']
                     self.cache_size[node] = stack_props['cache_size']
             #
-        if receiver_cache_size is 0:
+        if receiver_cache_size == 0:
             print "Receiver has no cache"
         else:
             print "Receiver cache size is set to ", receiver_cache_size
